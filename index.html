@@ -44,13 +44,13 @@
     .note{font-size:11px;color:#87928b;margin-top:18px;text-align:center}
     @media(min-width:700px){.app{padding:0 32px 50px}.welcome-art{width:140px;height:140px;flex-basis:140px;font-size:76px}.bottom-nav{position:static;border:1px solid var(--line);border-radius:18px;max-width:450px;margin:38px auto 0;box-shadow:var(--shadow)}main{margin-top:28px}.subjects{grid-template-columns:repeat(3,minmax(0,1fr))}}
     @media(max-width:420px){.app{padding-left:14px;padding-right:14px}.continue{padding:14px;gap:10px}.continue .btn{padding:11px 13px}.welcome-art{width:86px;height:86px;flex-basis:86px;font-size:48px}.pill{padding:8px 10px}}
-  </style>
+  .director-overlay{position:fixed;inset:0;z-index:30;background:#21172caa;display:none;align-items:center;justify-content:center;padding:14px}.director-overlay.show{display:flex}.director-box{background:#fff;width:min(100%,470px);max-height:92vh;overflow:auto;border-radius:24px;padding:20px}.director-person{font-size:48px;background:#eee5f8;border-radius:22px;padding:12px;border-bottom:12px solid #8057b5}.setup-choice,.teacher-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin:12px 0 18px}.setup-choice button{padding:12px 7px;border:1px solid #ebe6f1;border-radius:12px;background:white;font-weight:800}.setup-choice button.selected{border:2px solid #7652a8;background:#f0eafa}.teacher-card{border:1px solid #ebe6f1;border-radius:16px;padding:12px;text-align:center}.teacher-card.chosen{border:2px solid #7652a8;background:#faf7ff}.teacher-face-large{font-size:38px}.tag{display:inline-block;background:#f0eafa;color:#7652a8;border-radius:20px;padding:4px 8px;font-size:10px;font-weight:900}@media(min-width:700px){.teacher-grid{grid-template-columns:repeat(3,1fr)}}</style>
 </head>
 <body>
 <div class="app">
   <header>
     <div class="brand"><span class="brand-mark" aria-hidden="true">📖</span><span>Estudos Digital</span></div>
-    <div class="top-right"><div class="pill"><span>📚</span><span id="points">0</span> pontos</div><div class="avatar-mini" aria-label="Professor virtual">🧑‍🏫</div></div>
+    <div class="top-right"><div class="pill"><span>📚</span><span id="points">0</span> livros</div><div class="avatar-mini" aria-label="Professor virtual">🧑‍🏫</div></div>
   </header>
   <div role="note" style="max-width:760px;margin:10px auto 0;padding:11px 14px;border:1px solid #ead9a5;border-radius:14px;background:#fff8df;color:#725a19;font-size:13px;line-height:1.45"><b>Protótipo público para testes:</b> esta é uma demonstração visual. Não use senhas, dados pessoais ou informações reais. O nome e os pontos ficam apenas neste navegador; não existe cadastro nem envio de dados para um servidor.</div>
   <main>
@@ -106,13 +106,13 @@
     <section id="result" class="screen">
       <div class="card quiz-result"><div class="eyebrow">Assunto concluído</div><div class="result-emoji">🎉</div><h1>Você conseguiu!</h1><p id="resultText">Você terminou a miniavaliação.</p><div class="score" id="scoreText">0/5</div><p id="pointsEarned">+0 pontos de aprendizado 📚</p><div style="display:grid;gap:10px;margin-top:22px"><button class="btn" onclick="showScreen('home')">Voltar ao início</button><button class="btn secondary" onclick="startQuiz()">Tentar novamente</button></div></div>
     </section>
-    <section id="profile" class="screen">
+    <section id="teachers" class="screen"><div class="eyebrow">Personalize sua jornada</div><h1>Professores</h1><p>Escolha seu professor. Os especiais custam livros e mudam somente a aparência.</p><div class="teacher"><div class="teacher-face">📚</div><div><b>Seus livros: <span id="shopBooks">0</span></b><p>Junte livros concluindo miniavaliações.</p></div></div><h2>Grátis para escolher</h2><div id="freeTeachers" class="teacher-grid"></div><h2>Professores especiais</h2><p>Sem vantagens nas aulas, só aparência.</p><div id="paidTeachers" class="teacher-grid"></div></section><section id="profile" class="screen">
       <div class="eyebrow">Seu cantinho</div><h1>Meu perfil</h1><p>Suas informações ficam neste navegador neste protótipo.</p>
       <div class="card" style="margin-top:20px">
         <div class="profile-row"><span>🧑‍🎓</span><div><b id="profileName">Estudante</b><p>Aprendiz do Estudos Digital</p></div></div>
         <div class="profile-row"><span>📚</span><div><b id="profilePoints">0 pontos</b><p>Conquistas de aprendizado</p></div></div>
-        <div class="profile-row"><span>🌟</span><div><b>Aprender no seu ritmo</b><p>Seu progresso é uma jornada.</p></div></div>
-        <label for="studentName" style="display:block;font-weight:800;margin-top:18px">Como podemos chamar você?</label><input class="name-input" id="studentName" maxlength="24" placeholder="Seu primeiro nome"><button class="btn" onclick="saveName()">Salvar nome</button>
+        <div class="profile-row"><span>🎒</span><div><b id="profileYear">Ano escolar não escolhido</b><p id="profileSubjects">Matérias não escolhidas</p></div></div><div class="profile-row"><span>🌟</span><div><b id="profileLevel">Nível não escolhido</b><p>Seu nível de experiência</p></div></div><div class="profile-row"><span>👩‍🏫</span><div><b id="profileTeacher">Professora Clara</b><p>Seu professor atual</p></div></div>
+        <label for="studentName" style="display:block;font-weight:800;margin-top:18px">Como podemos chamar você?</label><input class="name-input" id="studentName" maxlength="24" placeholder="Seu primeiro nome"><button class="btn" onclick="saveName()">Salvar nome</button><button class="btn secondary" style="margin-top:10px" onclick="startSetup()">Editar respostas iniciais</button>
       </div>
       <p class="note">Protótipo demonstrativo. Não crie uma senha nem informe dados pessoais sensíveis.</p>
     </section>
@@ -120,10 +120,10 @@
   <nav class="bottom-nav" aria-label="Navegação principal">
     <button class="nav-btn active" data-screen="home" onclick="showScreen('home')"><b>⌂</b>Início</button>
     <button class="nav-btn" data-screen="subject" onclick="openSubject('Matemática')"><b>▦</b>Aprender</button>
-    <button class="nav-btn" data-screen="profile" onclick="showScreen('profile')"><b>☺</b>Perfil</button>
+    <button class="nav-btn" data-screen="teachers" onclick="showScreen(&quot;teachers&quot;)"><b>👩‍🏫</b>Professores</button><button class="nav-btn" data-screen="profile" onclick="showScreen('profile')"><b>☺</b>Perfil</button>
   </nav>
 </div>
-<script>
+<div class="director-overlay" id="setupOverlay"><div class="director-box"><div style="display:flex;gap:12px;align-items:center"><div class="director-person">👵🏻</div><div><div class="eyebrow">Diretora do Estudos Digital</div><h2>Dona Celeste</h2><p id="directorMessage"></p></div></div><div id="setupContent"></div><div style="display:flex;justify-content:space-between;margin-top:14px"><button class="btn secondary" id="setupBack">Voltar</button><button class="btn" id="setupNext">Continuar</button></div><p class="note">Protótipo: escolhas salvas somente neste navegador. Não informe dados reais.</p></div></div><script>
   const questions=[
     {q:"Uma pizza foi dividida em 4 partes iguais. Você pegou 1. Qual fração representa essa parte?",o:["1/2","1/4","4/1"],a:1,why:"O 1 mostra a parte escolhida e o 4 mostra o total de partes iguais."},
     {q:"Em uma fração, o número de baixo é chamado de…",o:["Numerador","Resultado","Denominador"],a:2,why:"O denominador indica em quantas partes iguais o inteiro foi dividido."},
@@ -131,9 +131,9 @@
     {q:"Se você divide uma barra em 3 partes iguais e pega 2, qual é a fração?",o:["1/3","2/3","3/2"],a:1,why:"Duas partes escolhidas de um total de três: 2/3."},
     {q:"Qual fração representa um inteiro dividido em 5 partes, com as 5 partes escolhidas?",o:["1/5","5/5","5/1"],a:1,why:"Quando todas as cinco partes são escolhidas, temos 5/5, que equivale a um inteiro."}
   ];
-  let qIndex=0,score=0,answered=false,points=Number(localStorage.getItem("ed-points")||0),student=localStorage.getItem("ed-name")||"";
+  let qIndex=0,score=0,answered=false,points=Number(localStorage.getItem("ed-books")||0),student=localStorage.getItem("ed-name")||"";
   const $=id=>document.getElementById(id);
-  function updatePoints(){$("points").textContent=points;$("profilePoints").textContent=points+" pontos"}
+  function updatePoints(){$("points").textContent=points;$("profilePoints").textContent=points+" livros";$("shopBooks").textContent=points}
   function showScreen(id){document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));$(id).classList.add("active");document.querySelectorAll(".nav-btn").forEach(b=>b.classList.toggle("active",b.dataset.screen===id||(id==="lesson"||id==="quiz"||id==="result")&&b.dataset.screen==="subject"));window.scrollTo({top:0,behavior:"smooth"})}
   function openSubject(name){$("subjectTitle").textContent=name;let topics=name==="Matemática"?[["1","Frações","Aprenda sobre partes de um inteiro · 5 min"],["2","Adição e subtração","Pratique operações · Em breve"],["3","Multiplicação","Descubra estratégias · Em breve"]]:name==="História"?[["1","Guerra Fria","Uma viagem pela história · Em breve"],["2","Primeira Guerra Mundial","Conheça esse período · Em breve"]]:[["1","Primeiras descobertas","Explore este assunto · Em breve"],["2","Vamos praticar?","Atividades para aprender · Em breve"]];$("topicList").innerHTML=topics.map((t,i)=>'<button class="topic" '+(i===0?'onclick="openLesson()"':'onclick="alert(\'Esta aula estará disponível em uma próxima versão!\')"')+'><span class="num">'+t[0]+'</span><span><b>'+t[1]+'</b><small>'+t[2]+'</small></span><span style="margin-left:auto;color:var(--green)">›</span></button>').join("");showScreen("subject")}
   function openLesson(){showScreen("lesson")}
@@ -142,9 +142,45 @@
   function startQuiz(){qIndex=0;score=0;answered=false;renderQuestion();showScreen("quiz")}
   function renderQuestion(){let q=questions[qIndex];$("quizCount").textContent="Pergunta "+(qIndex+1)+" de 5";$("quizQuestion").textContent=q.q;$("quizOptions").innerHTML=q.o.map((v,i)=>'<button class="option" onclick="chooseAnswer('+i+')" id="opt'+i+'">'+v+'</button>').join("");$("quizFeedback").className="feedback";$("quizFeedback").textContent="";$("quizNext").disabled=true;$("quizNext").textContent=qIndex===4?"Ver resultado":"Continuar";$("quizProgress").style.width=((qIndex+1)*20)+"%";$("quizHint").textContent="Escolha uma resposta.";answered=false}
   function chooseAnswer(i){if(answered)return;answered=true;let q=questions[qIndex],good=i===q.a;if(good)score++;q.o.forEach((_,n)=>{let el=$("opt"+n);el.disabled=true;if(n===q.a)el.classList.add("correct");else if(n===i)el.classList.add("wrong")});let f=$("quizFeedback");f.textContent=(good?"Muito bem! 🌟 ":"Vamos aprender! 💡 ")+q.why;f.className="feedback show "+(good?"good":"bad");$("quizNext").disabled=false;$("quizHint").textContent=good?"Resposta correta!":"Tudo bem, faz parte do aprendizado."}
-  function nextQuestion(){if(!answered)return;if(qIndex<4){qIndex++;renderQuestion()}else{let earned=score*10;points+=earned;localStorage.setItem("ed-points",points);updatePoints();$("scoreText").textContent=score+"/5";$("resultText").textContent=score===5?"Excelente! Você acertou todas as perguntas!":score>=3?"Muito bom! Você está avançando.":"Boa tentativa! Reveja a aula e tente novamente."; $("pointsEarned").textContent="+"+earned+" pontos de aprendizado 📚";showScreen("result")}}
+  function nextQuestion(){if(!answered)return;if(qIndex<4){qIndex++;renderQuestion()}else{let earned=score===5?2:(score>=3?1:0);points+=earned;localStorage.setItem("ed-books",points);updatePoints();$("scoreText").textContent=score+"/5";$("resultText").textContent=score===5?"Excelente! Você acertou todas as perguntas!":score>=3?"Muito bom! Você está avançando.":"Boa tentativa! Reveja a aula e tente novamente."; $("pointsEarned").textContent="+"+earned+" livros 📚";showScreen("result")}}
   function saveName(){let n=$("studentName").value.trim();if(!n)return;student=n;localStorage.setItem("ed-name",student);updateName();alert("Nome salvo neste navegador!")}
   function updateName(){$("helloName").textContent=student?", "+student:"";$("profileName").textContent=student||"Estudante";$("studentName").value=student}
+
+let setupStep=0;
+let studentProfile=JSON.parse(localStorage.getItem("ed-profile")||"null")||{year:"",subjects:[],level:"",teacher:"Professora Clara"};
+const setupSubjects=["Matemática","Português","História","Geografia","Ciências","Artes"];
+const setupLevels=["Não sei","Sou bom","Sou muito bom","Expert"];
+const teacherCatalog=[{name:"Professora Clara",face:"👩🏻‍🏫",free:true},{name:"Professor Miguel",face:"👨🏻‍🏫",free:true},{name:"Professora Bia",face:"👩🏽‍🏫",free:true},{name:"Professor Theo",face:"👨🏽‍🏫",free:true},{name:"Professora Nina",face:"👩🏾‍🏫",free:true},{name:"Professor Augusto",face:"👨🏻‍💼",cost:8},{name:"Professora Valentina",face:"👩🏼‍🎨",cost:10},{name:"Professor Ravi",face:"👨🏾‍🔬",cost:12},{name:"Professora Aurora",face:"👩🏻‍🔬",cost:14},{name:"Professor Bento",face:"🧑🏻‍🏫",cost:16}];
+function startSetup(){setupStep=0;renderSetup();$("setupOverlay").classList.add("show")}
+function renderSetup(){
+ let html="";
+ $("setupNext").textContent=setupStep===3?"Entrar no Estudos Digital":"Continuar";
+ $("setupBack").style.visibility=setupStep===0?"hidden":"visible";
+ if(setupStep===0){$("directorMessage").textContent="Antes de você entrar, vamos fazer algumas perguntas!";html='<b>Qual é o seu nome?</b><input id="setupName" class="name-input" maxlength="24" placeholder="Digite seu nome" value="'+student+'">'}
+ if(setupStep===1){$("directorMessage").textContent="Em qual ano você está?";html="<b>Escolha seu ano escolar</b><div class='setup-choice'>";for(let i=2;i<=9;i++){let v=i+"º ano";html+='<button data-year="'+v+'" class="'+(studentProfile.year===v?"selected":"")+'">'+v+"</button>"}html+="</div>"}
+ if(setupStep===2){$("directorMessage").textContent="O que você gostaria de aprender?";html="<b>Você pode escolher mais de uma matéria.</b><div class='setup-choice'>";setupSubjects.forEach(v=>{html+='<button data-subject="'+v+'" class="'+(studentProfile.subjects.includes(v)?"selected":"")+'">'+v+"</button>"});html+="</div>"}
+ if(setupStep===3){$("directorMessage").textContent="Como você se considera nessa matéria?";html="<b>Escolha seu nível.</b><div class='setup-choice'>";setupLevels.forEach(v=>{html+='<button data-level="'+v+'" class="'+(studentProfile.level===v?"selected":"")+'">'+v+"</button>"});html+="</div>"}
+ $("setupContent").innerHTML=html;
+ document.querySelectorAll("[data-year]").forEach(b=>b.onclick=()=>{studentProfile.year=b.dataset.year;renderSetup()});
+ document.querySelectorAll("[data-subject]").forEach(b=>b.onclick=()=>{let v=b.dataset.subject;studentProfile.subjects=studentProfile.subjects.includes(v)?studentProfile.subjects.filter(x=>x!==v):studentProfile.subjects.concat(v);renderSetup()});
+ document.querySelectorAll("[data-level]").forEach(b=>b.onclick=()=>{studentProfile.level=b.dataset.level;renderSetup()});
+}
+function setupBack(){if(setupStep>0){setupStep--;renderSetup()}}
+function setupNext(){
+ if(setupStep===0){let n=$("setupName").value.trim();if(!n){alert("Digite seu nome.");return}student=n}
+ if(setupStep===1&&!studentProfile.year){alert("Escolha seu ano.");return}
+ if(setupStep===2&&!studentProfile.subjects.length){alert("Escolha pelo menos uma matéria.");return}
+ if(setupStep===3&&!studentProfile.level){alert("Escolha seu nível.");return}
+ if(setupStep<3){setupStep++;renderSetup();return}
+ localStorage.setItem("ed-name",student);localStorage.setItem("ed-profile",JSON.stringify(studentProfile));localStorage.setItem("ed-onboarded","1");updateName();$("setupOverlay").classList.remove("show");showScreen("home")
+}
+$("setupNext").onclick=setupNext;$("setupBack").onclick=setupBack;
+function renderTeachers(){let free="",paid="";teacherCatalog.forEach(t=>{let selected=studentProfile.teacher===t.name;let card='<div class="teacher-card '+(selected?"chosen":"")+'"><div class="teacher-face-large">'+t.face+'</div><span class="tag">'+(t.free?"GRÁTIS":t.cost+" livros")+'</span><h3>'+t.name+'</h3><p>Somente aparência</p><button class="btn secondary" data-teacher="'+t.name+'">'+(selected?"Selecionado":t.free?"Escolher":"Comprar com livros")+'</button></div>';if(t.free)free+=card;else paid+=card});$("freeTeachers").innerHTML=free;$("paidTeachers").innerHTML=paid;document.querySelectorAll("[data-teacher]").forEach(b=>b.onclick=()=>chooseTeacher(b.dataset.teacher))}
+function chooseTeacher(name){let t=teacherCatalog.find(x=>x.name===name);if(!t)return;if(!t.free&&studentProfile.teacher!==name){if(points<t.cost){alert("Você precisa de "+t.cost+" livros.");return}if(!confirm("Usar "+t.cost+" livros neste visual? Ele não dá vantagens."))return;points-=t.cost;localStorage.setItem("ed-books",points)}studentProfile.teacher=name;localStorage.setItem("ed-profile",JSON.stringify(studentProfile));updatePoints();renderTeachers();updateName()}
+const oldUpdateName=updateName;
+updateName=function(){oldUpdateName();if($("profileYear")){$("profileYear").textContent=studentProfile.year||"Ano escolar não escolhido";$("profileSubjects").textContent=studentProfile.subjects.join(", ")||"Matérias não escolhidas";$("profileLevel").textContent=studentProfile.level||"Nível não escolhido";$("profileTeacher").textContent=studentProfile.teacher||"Professora Clara"}};
+updatePoints();renderTeachers();if(!localStorage.getItem("ed-onboarded"))startSetup();
+
   updatePoints();updateName();
 </script>
 </body>
