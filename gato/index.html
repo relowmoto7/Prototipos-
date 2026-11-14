@@ -39,7 +39,7 @@
 
 </main>
 <nav class="bottom">
-<button class="nav active" data-go="home" onclick="go('home')"><b>⌂</b>Início</button><button class="nav" data-go="profile" onclick="go('profile')"><b>🐾</b>Meu pet</button><button class="nav" data-go="care" onclick="go('care')"><b>💚</b>Cuidados</button><button class="nav" data-go="products" onclick="go('products')"><b>🛍️</b>Produtos</button><button class="nav" data-go="adoption" onclick="go('adoption')"><b>🏡</b>Adoção</button>
+<button class="nav active" data-go="home" onclick="go('home')"><b>⌂</b>Início</button><button class="nav" data-go="profile" onclick="go('profile')"><b>🐾</b>Meu pet</button><button class="nav" data-go="care" onclick="go('care')"><b>💚</b>Cuidados</button><button class="nav" data-go="health" onclick="go('health')"><b>🩺</b>Saúde</button><button class="nav" data-go="products" onclick="go('products')"><b>🛍️</b>Produtos</button><button class="nav" data-go="adoption" onclick="go('adoption')"><b>🏡</b>Adoção</button>
 </nav></div>
 <script>
 const $=id=>document.getElementById(id);function go(id){document.querySelectorAll('.screen').forEach(s=>s.classList.toggle('active',s.id===id));document.querySelectorAll('.nav').forEach(b=>b.classList.toggle('active',b.dataset.go===id));window.scrollTo({top:0,behavior:'smooth'})}
