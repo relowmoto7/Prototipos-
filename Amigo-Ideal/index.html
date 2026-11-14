@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#6657d9"><title>Conexão — amizades de verdade</title>
+<style>
+:root{--ink:#25233a;--muted:#716f83;--purple:#6657d9;--lav:#eeeaff;--line:#e9e6f2;--bg:#f7f6fc}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
+header{padding:28px 20px 34px;background:linear-gradient(135deg,#6556d8,#8b78ed);color:white;border-radius:0 0 30px 30px}
+.wrap{max-width:760px;margin:auto}header .brand{font-size:13px;font-weight:800;letter-spacing:1.8px;opacity:.9}h1{font-size:32px;line-height:1.1;margin:14px 0 10px}header p{margin:0;line-height:1.5;max-width:520px;color:#f1efff}
+main{padding:20px;max-width:760px;margin:auto}.tabs{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:0 0 18px}.tab{border:1px solid var(--line);background:white;border-radius:15px;padding:13px;font-weight:750;color:var(--muted);cursor:pointer}.tab.active{background:var(--lav);border-color:#cfc7ff;color:#5142c2}
+.card{background:white;border:1px solid var(--line);border-radius:20px;padding:20px;margin-bottom:16px;box-shadow:0 5px 22px #342b6510}.card h2{font-size:19px;margin:0 0 5px}.hint{color:var(--muted);font-size:13px;line-height:1.5;margin:0 0 17px}
+label{display:block;font-size:13px;font-weight:750;margin:14px 0 7px}input,textarea,select{width:100%;border:1px solid #ddd9e9;border-radius:12px;padding:12px 13px;font:inherit;color:var(--ink);background:#fff;outline:none}input:focus,textarea:focus{border-color:var(--purple);box-shadow:0 0 0 3px #6657d91c}textarea{min-height:82px;resize:vertical}small{color:var(--muted);font-size:12px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.btn{border:0;border-radius:13px;background:var(--purple);color:white;padding:14px 18px;font-weight:800;font-size:15px;width:100%;cursor:pointer;margin-top:17px}.btn.secondary{background:#eeeaff;color:#5142c2}.result{display:none;background:#f5f3ff;border:1px solid #ddd6ff;border-radius:16px;padding:17px;margin-top:16px;line-height:1.65;white-space:pre-wrap}.result h3{margin:0 0 8px}.pill{display:inline-block;border-radius:30px;background:#eeeaff;color:#5142c2;font-size:12px;font-weight:800;padding:6px 10px;margin-bottom:10px}.photo{display:flex;gap:12px;align-items:center}.photo img{width:64px;height:64px;border-radius:14px;object-fit:cover;background:#eee;display:none}.note{font-size:12px;color:var(--muted);line-height:1.5;margin-top:12px}.footer{text-align:center;color:var(--muted);font-size:12px;padding:8px 20px 28px}
+@media(max-width:520px){.grid{grid-template-columns:1fr}h1{font-size:29px}.card{padding:17px}}
+</style>
+</head>
+<body>
+<header><div class="wrap"><div class="brand">✦ CONEXÃO</div><h1>Amizades começam<br>com uma conversa.</h1><p>Ideias para se aproximar de alguém com respeito, naturalidade e gentileza.</p></div></header>
+<main>
+<div class="tabs"><button class="tab active" id="tabPlan" type="button">🤝 Meu plano</button><button class="tab" id="tabMessage" type="button">💬 Criar mensagem</button></div>
+<section id="planSection">
+<div class="card"><h2>Vamos conhecer vocês?</h2><p class="hint">Conte um pouquinho sobre você e sobre a pessoa. Não precisa preencher tudo: quanto mais contexto, mais úteis serão as sugestões.</p>
+<div class="grid"><div><label for="myName">Seu nome (opcional)</label><input id="myName" placeholder="Como podemos te chamar?"></div><div><label for="theirName">Nome da pessoa (opcional)</label><input id="theirName" placeholder="Nome ou apelido"></div></div>
+<label for="myLikes">Do que você gosta?</label><textarea id="myLikes" placeholder="Ex.: jogos, desenhos, futebol, música..."></textarea>
+<label for="myStyle">Como você costuma ser?</label><textarea id="myStyle" placeholder="Ex.: mais tímido, brincalhão, tranquilo..."></textarea>
+<label for="theirLikes">O que você sabe que essa pessoa gosta ou faz?</label><textarea id="theirLikes" placeholder="Ex.: gosta de animais, joga no recreio, desenha..."></textarea>
+<label for="where">Como vocês se conhecem?</label><textarea id="where" placeholder="Ex.: estudamos na mesma turma, fazemos um curso..."></textarea>
+<label for="photo">Foto (totalmente opcional)</label><div class="photo"><img id="preview" alt="Prévia da foto"><input id="photo" type="file" accept="image/*"></div><p class="note">A foto fica apenas na prévia deste aparelho; não é enviada nem necessária. Só use uma foto se tiver autorização da pessoa.</p>
+<button class="btn" id="makePlan">Criar meu plano de amizade ✨</button><div class="result" id="planResult" aria-live="polite"></div></div>
+</section>
+<section id="messageSection" style="display:none">
+<div class="card"><h2>Uma mensagem com a sua cara</h2><p class="hint">Diga o que você gostaria de falar e escolha o clima da mensagem. Você poderá editar antes de enviar.</p>
+<label for="msgName">Nome da pessoa (opcional)</label><input id="msgName" placeholder="Nome ou apelido">
+<label for="msgContext">O que você quer dizer?</label><textarea id="msgContext" placeholder="Ex.: queria puxar assunto porque vi que ela gosta de jogos..."></textarea>
+<label for="tone">Estilo da mensagem</label><select id="tone"><option value="leve e natural">Leve e natural</option><option value="simpático e divertido">Simpático e divertido</option><option value="calmo e educado">Calmo e educado</option></select>
+<button class="btn" id="makeMessage">Criar mensagem 💌</button><div class="result" id="messageResult" aria-live="polite"></div><button class="btn secondary" id="copyMessage" style="display:none">Copiar mensagem</button></div>
+</section>
+<div class="card"><h2>🌱 Um lembrete importante</h2><p class="hint" style="margin:8px 0 0">Amizade não é convencer alguém a gostar de você. É conhecer a outra pessoa, encontrar interesses em comum, respeitar o espaço dela e também ser você mesmo. Se ela não quiser conversar, tudo bem: isso não diminui o seu valor.</p></div>
+</main><div class="footer">Protótipo • Suas respostas não são enviadas a nenhum servidor.</div>
+<script>
+const $=id=>document.getElementById(id);
+$('tabPlan').onclick=()=>{ $('planSection').style.display='block';$('messageSection').style.display='none';$('tabPlan').classList.add('active');$('tabMessage').classList.remove('active')};
+$('tabMessage').onclick=()=>{ $('planSection').style.display='none';$('messageSection').style.display='block';$('tabMessage').classList.add('active');$('tabPlan').classList.remove('active')};
+$('photo').addEventListener('change',e=>{const f=e.target.files[0];if(!f)return;const u=URL.createObjectURL(f);$('preview').src=u;$('preview').style.display='block'});
+function val(id){return $(id).value.trim()}
+$('makePlan').onclick=()=>{
+const mine=val('myLikes'),style=val('myStyle'),theirs=val('theirLikes'),where=val('where'),name=val('theirName')||'essa pessoa';
+if(!mine&&!style&&!theirs&&!where){$('planResult').style.display='block';$('planResult').textContent='Conte pelo menos um pouquinho sobre você ou sobre a pessoa para eu montar sugestões mais úteis.';return}
+let shared=mine&&theirs?'Procure um ponto em comum entre o que você gosta ('+mine+') e o que ela gosta ('+theirs+'). Se houver algo em comum, use isso como assunto.':theirs?'Você comentou que '+name+' gosta de '+theirs+'. Se você também tiver curiosidade sobre isso, pode fazer uma pergunta simples e sincera.':'Comece por algo que você gosta ('+mine+'). Você pode compartilhar isso sem exigir que a outra pessoa goste da mesma coisa.';
+let opening=where?'Como vocês '+where+', aproveite uma ocasião natural para dar oi.':'Quando surgir uma oportunidade tranquila, cumprimente e comece com um assunto simples.';
+let shyness=style?'Como você se descreveu ('+style+'), escolha um passo que pareça confortável para você.':'Não precisa tentar parecer outra pessoa. Fale do seu jeito.';
+$('planResult').style.display='block';$('planResult').innerHTML='<span class="pill">SEU PLANO</span><h3>Pequenos passos para uma amizade</h3><b>1. Comece naturalmente</b><br>'+opening+'<br><br><b>2. Encontre um assunto</b><br>'+shared+'<br><br><b>3. Demonstre interesse</b><br>Escute a resposta, faça uma pergunta relacionada e também conte um pouco sobre você. Uma conversa boa tem espaço para os dois.<br><br><b>4. Vá com calma</b><br>'+shyness+' Não é preciso virar melhor amigo de uma hora para outra.<br><br><b>5. Respeite o espaço</b><br>Se a pessoa estiver ocupada ou não quiser conversar, respeite. Tente outra ocasião apenas se ela demonstrar abertura.<br><br><b>Uma ideia para hoje</b><br>Dê oi e faça uma pergunta simples sobre um interesse que vocês possam ter em comum. O objetivo é conhecer, não impressionar.';
+};
+$('makeMessage').onclick=()=>{
+const n=val('msgName'),c=val('msgContext'),t=val('tone');if(!c){$('messageResult').style.display='block';$('messageResult').textContent='Escreva o que você gostaria de dizer para eu criar uma sugestão.';$('copyMessage').style.display='none';return}
+let greeting=n?'Oi, '+n+'!':'Oi!';let body=c.replace(/[.!?]+$/,'');let text=greeting+' '+body+'. Se você quiser, podemos conversar qualquer hora :)';
+if(t==='simpático e divertido')text=greeting+' 😄 '+body+'. O que você acha?';
+if(t==='calmo e educado')text=greeting+'! '+body+'. Se estiver tudo bem para você, gostaria de conversar um pouco.';
+$('messageResult').style.display='block';$('messageResult').innerHTML='<span class="pill">SUGESTÃO EDITÁVEL</span><h3>Sua mensagem</h3><textarea id="editableMessage" style="min-height:110px"></textarea><p class="note">Leia e mude qualquer parte para ficar com a sua voz. Não precisa enviar se não se sentir confortável.</p>';$('editableMessage').value=text;$('copyMessage').style.display='block';
+};
+$('copyMessage').onclick=async()=>{try{await navigator.clipboard.writeText($('editableMessage').value);$('copyMessage').textContent='Copiado! ✓';}catch(e){$('copyMessage').textContent='Selecione e copie o texto';}};
+</script></body></html>
