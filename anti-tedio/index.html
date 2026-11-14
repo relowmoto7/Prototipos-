@@ -2,6 +2,11 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#f7e9ff">
+<link rel="manifest" href="./manifest.json">
+<link rel="icon" href="./icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="./icon.svg">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Anti-Tédio">
 <title>Anti-Tédio — bora brincar?</title>
 <style>
 :root{--ink:#34294b;--muted:#776d8d;--purple:#7655c9;--pink:#ff8db5;--paper:#fff;--bg:#f8f2ff}
@@ -122,4 +127,13 @@ function clearCanvas(){if(!ctx)return;ctx.clearRect(0,0,canvas.width,canvas.heig
 function saveDrawing(){if(!canvas)return;const a=document.createElement('a');a.download='meu-desenho-anti-tedio.png';a.href=canvas.toDataURL('image/png');a.click();document.getElementById('artResult').textContent='Seu desenho foi salvo! 🎨'}
 document.getElementById('paperPhoto').addEventListener('change',e=>{const f=e.target.files[0];if(!f)return;const img=document.getElementById('paperPreview');img.src=URL.createObjectURL(f);img.style.display='block';document.getElementById('artResult').textContent='Foto carregada! Ela aparece aqui para você visualizar.'});
 renderChallengeCards();window.addEventListener('resize',()=>{if(document.getElementById('art').classList.contains('active'))resizeCanvas()});
+
+// Prepara o Anti-Tédio para instalação como PWA e uso offline.
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./service-worker.js').catch(error => {
+      console.error('Não foi possível registrar o modo offline:', error);
+    });
+  });
+}
 </script></body></html>
