@@ -1,0 +1,16 @@
+{
+  "id": "/Prototipos-/amigo-ideal.html",
+  "name": "Como Fazer Amigos",
+  "short_name": "Como Fazer Amigos",
+  "description": "Ideias para começar conversas e construir amizades com respeito.",
+  "lang": "pt-BR",
+  "start_url": "/Prototipos-/amigo-ideal.html",
+  "scope": "/Prototipos-/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "theme_color": "#6657d9",
+  "background_color": "#f7f6fc",
+  "icons": [
+    { "src": "/Prototipos-/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}
