@@ -28,9 +28,9 @@ label{display:block;font-size:13px;font-weight:750;margin:14px 0 7px}input,texta
 <button class="btn" id="makePlan">Criar meu plano de amizade ✨</button><div class="result" id="planResult" aria-live="polite"></div><button class="btn secondary" id="speakPlan" type="button" style="display:none">🔊 Ouvir meu plano</button></div>
 </section>
 <section id="messageSection" style="display:none">
-<div class="card"><h2>Uma mensagem com a sua cara</h2><p class="hint">Diga o que você gostaria de falar e escolha o clima da mensagem. Você poderá editar antes de enviar.</p>
+<div class="card"><h2>Uma mensagem com a sua cara</h2><p class="hint">Conte a ideia ou o objetivo da mensagem. O app vai transformar suas instruções em um texto pronto, que você poderá editar antes de enviar.</p>
 <label for="msgName">Nome da pessoa (opcional)</label><input id="msgName" placeholder="Nome ou apelido">
-<label for="msgContext">O que você quer dizer?</label><textarea id="msgContext" placeholder="Ex.: queria puxar assunto porque vi que ela gosta de jogos..."></textarea>
+<label for="msgContext">O que você quer que a mensagem peça ou fale?</label><textarea id="msgContext" placeholder="Ex.: crie uma mensagem perguntando se ele quer ser meu amigo e se gostaria de combinar de se encontrar comigo."></textarea><p class="note">Dica: escreva uma instrução, não precisa escrever a mensagem pronta.</p>
 <label for="tone">Estilo da mensagem</label><select id="tone"><option value="leve e natural">Leve e natural</option><option value="simpático e divertido">Simpático e divertido</option><option value="calmo e educado">Calmo e educado</option></select>
 <button class="btn" id="makeMessage">Criar mensagem 💌</button><div class="result" id="messageResult" aria-live="polite"></div><button class="btn secondary" id="copyMessage" style="display:none">Copiar mensagem</button></div>
 </section>
@@ -53,11 +53,34 @@ $('speakPlan').style.display='block';$('speakPlan').textContent='🔊 Ouvir meu 
 };
 $('speakPlan').onclick=()=>{if(!('speechSynthesis' in window)||!('SpeechSynthesisUtterance' in window)){alert('Este navegador não oferece leitura em voz alta.');return}if(window.speechSynthesis.speaking){window.speechSynthesis.cancel();$('speakPlan').textContent='🔊 Ouvir meu plano';return}const spoken=$('planResult').innerText;if(!spoken)return;const utterance=new SpeechSynthesisUtterance(spoken);utterance.lang='pt-BR';utterance.rate=0.95;utterance.onend=()=>{$('speakPlan').textContent='🔊 Ouvir meu plano'};window.speechSynthesis.cancel();window.speechSynthesis.speak(utterance);$('speakPlan').textContent='⏹ Parar áudio';};
 $('makeMessage').onclick=()=>{
-const n=val('msgName'),c=val('msgContext'),t=val('tone');if(!c){$('messageResult').style.display='block';$('messageResult').textContent='Escreva o que você gostaria de dizer para eu criar uma sugestão.';$('copyMessage').style.display='none';return}
-let greeting=n?'Oi, '+n+'!':'Oi!';let body=c.replace(/[.!?]+$/,'');let text=greeting+' '+body+'. Se você quiser, podemos conversar qualquer hora :)';
-if(t==='simpático e divertido')text=greeting+' 😄 '+body+'. O que você acha?';
-if(t==='calmo e educado')text=greeting+'! '+body+'. Se estiver tudo bem para você, gostaria de conversar um pouco.';
-$('messageResult').style.display='block';$('messageResult').innerHTML='<span class="pill">SUGESTÃO EDITÁVEL</span><h3>Sua mensagem</h3><textarea id="editableMessage" style="min-height:110px"></textarea><p class="note">Leia e mude qualquer parte para ficar com a sua voz. Não precisa enviar se não se sentir confortável.</p>';$('editableMessage').value=text;$('copyMessage').style.display='block';
+const n=val('msgName'),idea=val('msgContext'),t=val('tone');
+if(!idea){$('messageResult').style.display='block';$('messageResult').textContent='Conte a ideia da mensagem para eu montar um texto.';$('copyMessage').style.display='none';return}
+const low=idea.toLowerCase();
+const parts=[];
+if(/ser (meu|minha) amig|quer.*(ser|virar).*amig|amizade|fazer amizade/.test(low)){
+ parts.push('Queria te perguntar se você gostaria de ser meu amigo. Acho que seria legal a gente se conhecer melhor.');
+}
+if(/encontr|se ver|marcar|sair/.test(low)){
+ parts.push('Se você quiser, a gente também poderia combinar de se encontrar em um lugar público, em um horário que seja bom para nós. Podemos combinar com nossos responsáveis sabendo e de acordo.');
+}
+if(/convers|bater papo|falar comigo/.test(low)){
+ parts.push('Também gostaria de conversar mais com você quando você tiver vontade.');
+}
+if(/jog|brinc|atividade|fazer algo/.test(low)){
+ parts.push('Se você topar, a gente poderia jogar ou fazer alguma atividade juntos.');
+}
+if(parts.length===0){
+ let topic=idea.replace(/^(crie|faz|faça|escreva|monte) (uma )?(mensagem|texto) (dizendo|perguntando|para|sobre)\s*/i,'').replace(/[.!?]+$/,'');
+ parts.push('Queria te chamar para '+topic+'. O que você acha?');
+}
+let greeting=n?'Oi, '+n+'!':'Oi!';
+let closing=t==='simpático e divertido'?' 😄 O que você acha?':t==='calmo e educado'?' Se você não quiser, tudo bem.':' O que você acha?';
+let text=greeting+' Tudo bem? '+parts.join(' ') + closing;
+$('messageResult').style.display='block';
+$('messageResult').innerHTML='<span class="pill">SUGESTÃO EDITÁVEL</span><h3>Sua mensagem</h3><textarea id="editableMessage" style="min-height:130px"></textarea><p class="note">O texto foi montado a partir da sua ideia. Leia e ajuste para ficar do seu jeito antes de enviar.</p>';
+$('editableMessage').value=text;
+$('copyMessage').style.display='block';
+$('copyMessage').textContent='Copiar mensagem';
 };
 $('copyMessage').onclick=async()=>{try{await navigator.clipboard.writeText($('editableMessage').value);$('copyMessage').textContent='Copiado! ✓';}catch(e){$('copyMessage').textContent='Selecione e copie o texto';}};
 </script></body></html>
