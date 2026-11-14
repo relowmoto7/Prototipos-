@@ -14,7 +14,7 @@
 @media(max-width:650px){.hero{padding:18px;gap:8px}.mascot{flex-basis:105px;height:112px;border-radius:30px}.face{transform:scale(.82)}.hero h1{font-size:34px}.pill{font-size:10px}.categoryGrid,.activityList{grid-template-columns:1fr 1fr}.category{min-height:125px;padding:14px}.drawCanvas{height:270px}}@media(max-width:370px){.mascot{flex-basis:82px;height:90px}.face{transform:scale(.68)}.choices{grid-template-columns:1fr}}
 </style></head>
 <body><div class="wrap">
-<header class="top"><div class="logo"><span>🎈</span> Anti-Tédio</div><div class="pill">✨ seu cantinho da diversão</div></header>
+<header class="top"><div class="logo"><span>🎈</span> Anti-Tédio</div><button id="installApp" class="pill" type="button" hidden>⬇️ Instalar app</button></header>
 <main>
 <section id="home" class="screen active">
 <div class="hero"><div style="flex:1"><div class="eyebrow">Clube oficial contra o tédio</div><h1>Opa! Bora tirar esse tédio?</h1><p>Escolha o que está a fim de fazer hoje. Tem brincadeiras, desafios, jogos e arte!</p></div><div class="mascot" aria-label="Mascote roxinho simpático"><span class="spark s1">✦</span><span class="spark s2">✧</span><div class="face"><i class="eye l"></i><i class="eye r"></i><i class="cheek l"></i><i class="cheek r"></i><i class="mouth"></i></div></div></div>
@@ -127,6 +127,26 @@ function clearCanvas(){if(!ctx)return;ctx.clearRect(0,0,canvas.width,canvas.heig
 function saveDrawing(){if(!canvas)return;const a=document.createElement('a');a.download='meu-desenho-anti-tedio.png';a.href=canvas.toDataURL('image/png');a.click();document.getElementById('artResult').textContent='Seu desenho foi salvo! 🎨'}
 document.getElementById('paperPhoto').addEventListener('change',e=>{const f=e.target.files[0];if(!f)return;const img=document.getElementById('paperPreview');img.src=URL.createObjectURL(f);img.style.display='block';document.getElementById('artResult').textContent='Foto carregada! Ela aparece aqui para você visualizar.'});
 renderChallengeCards();window.addEventListener('resize',()=>{if(document.getElementById('art').classList.contains('active'))resizeCanvas()});
+
+// Botão de instalação: aparece nos navegadores que oferecem instalação direta.
+let installPrompt = null;
+const installButton = document.getElementById('installApp');
+window.addEventListener('beforeinstallprompt', event => {
+  event.preventDefault();
+  installPrompt = event;
+  installButton.hidden = false;
+});
+installButton.addEventListener('click', async () => {
+  if (!installPrompt) return;
+  installPrompt.prompt();
+  await installPrompt.userChoice;
+  installPrompt = null;
+  installButton.hidden = true;
+});
+window.addEventListener('appinstalled', () => {
+  installButton.hidden = true;
+  installPrompt = null;
+});
 
 // Prepara o Anti-Tédio para instalação como PWA e uso offline.
 if ('serviceWorker' in navigator) {
