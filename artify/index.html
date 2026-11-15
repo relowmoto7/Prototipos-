@@ -160,6 +160,8 @@ $('clear').addEventListener('click',()=>{saveHistory();ctx.clearRect(0,0,canvas.
 function selectScene(value){scene=value;document.querySelectorAll('[data-scene]').forEach(b=>{const on=b.dataset.scene===value;b.classList.toggle('is-selected',on);b.setAttribute('aria-pressed',String(on))});document.querySelectorAll('[data-scene-page]').forEach(b=>b.classList.toggle('is-selected',b.dataset.scenePage===value))}
 document.querySelectorAll('[data-scene]').forEach(b=>b.addEventListener('click',()=>{selectScene(b.dataset.scene);toast('Cenário selecionado')}));
 document.querySelectorAll('[data-scene-page]').forEach(b=>b.addEventListener('click',()=>{selectScene(b.dataset.scenePage);showPage('create');toast('Cenário selecionado')}));
+$('whiteBg').addEventListener('click',()=>{selectScene('white');toast('Fundo branco selecionado')});
+$('transparentBg').addEventListener('click',()=>{selectScene('transparent');toast('Fundo transparente selecionado')});
 function chooseStyle(style){activeStyle=style;document.querySelectorAll('[data-style]').forEach(b=>{const on=b.dataset.style===style;b.classList.toggle('is-selected',on);b.setAttribute('aria-pressed',String(on))})}
 document.querySelectorAll('[data-style]').forEach(b=>b.addEventListener('click',()=>{chooseStyle(b.dataset.style);toast('Modelo '+activeStyle+' selecionado')}));
 function showPage(page){['create','photos','mine'].forEach(name=>$('page-'+name).classList.toggle('hidden',name!==page));document.querySelectorAll('[data-page]').forEach(b=>{const on=b.dataset.page===page;b.classList.toggle('is-selected',on);b.setAttribute('aria-pressed',String(on))});window.scrollTo({top:0,behavior:'smooth'})}
