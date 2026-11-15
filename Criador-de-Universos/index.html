@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#090d25">
+<title>Criador de Universos</title>
+<style>
+:root{--bg:#080c22;--panel:#141b3b;--panel2:#1b2550;--text:#f4f6ff;--muted:#aeb9df;--cyan:#65e5ff;--pink:#bd8cff}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 50% -15%,#29366f 0,#11183b 38%,var(--bg) 75%);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,sans-serif;min-height:100vh}
+header{padding:22px 18px 10px;text-align:center}h1{font-size:clamp(27px,6vw,42px);margin:0;background:linear-gradient(90deg,#8ceaff,#d6a5ff);color:transparent;background-clip:text}header p{margin:8px 0;color:var(--muted)}
+main{width:min(1000px,94%);margin:0 auto 50px}.tabs{display:flex;gap:9px;justify-content:center;flex-wrap:wrap;margin:18px 0 22px}.tab,button{border:0;border-radius:13px;padding:12px 16px;font-weight:750;color:white;background:#273361;cursor:pointer}.tab.active,button.primary{background:linear-gradient(110deg,#397de9,#925be7)}button:active,.tab:active{transform:scale(.98)}.panel{background:linear-gradient(145deg,rgba(25,34,75,.96),rgba(14,21,49,.97));border:1px solid #344477;border-radius:22px;padding:20px;box-shadow:0 18px 50px #02061766}.hidden{display:none!important}.layout{display:grid;grid-template-columns:1fr 1fr;gap:18px}.preview{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:330px;background:radial-gradient(circle,#283d77 0,#121c43 46%,#0b1230 75%);border-radius:18px;position:relative;overflow:hidden}.stars{position:absolute;inset:0;background-image:radial-gradient(#fff 1px,transparent 1.5px),radial-gradient(#9adfff 1px,transparent 1.5px);background-size:53px 53px,87px 87px;background-position:0 0,24px 30px;opacity:.55}.planet-wrap{position:relative;z-index:1;display:grid;place-items:center;width:250px;height:250px}.planet{width:190px;height:190px;border-radius:50%;position:relative;overflow:hidden;background:linear-gradient(145deg,#72dcff,#2678c9 58%,#17447d);box-shadow:inset -22px -13px 28px #07163199,inset 12px 8px 20px #ffffff55,0 0 35px #6bdcff55;transition:.25s}.continent{position:absolute;background:#6bbd72;border-radius:55% 40% 60% 35%;filter:drop-shadow(1px 2px 1px #143b32aa)}.c1{width:65px;height:48px;top:38px;left:36px;transform:rotate(25deg)}.c2{width:42px;height:62px;top:92px;left:105px;transform:rotate(-24deg)}.c3{width:35px;height:25px;top:48px;right:19px;transform:rotate(12deg)}.ring{position:absolute;width:245px;height:76px;border:10px solid #e9c77a;border-left-color:#e9c77a88;border-right-color:#fff0;transform:rotate(-17deg);border-radius:50%;z-index:2;display:none}.planet-name{position:relative;z-index:2;font-weight:800;font-size:19px;margin-top:15px;text-shadow:0 2px 8px #000}
+.field{margin:0 0 15px}label{display:block;font-weight:700;margin-bottom:7px}input,select{width:100%;background:#0b1230;color:white;border:1px solid #42548b;border-radius:11px;padding:12px;font:inherit}input[type=color]{height:46px;padding:4px}input[type=range]{padding:0;accent-color:#8e78ff}small,.muted{color:var(--muted)}.actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:12px}.actions button{flex:1}.planet-card{display:flex;align-items:center;gap:14px;background:#101938;border:1px solid #334477;border-radius:15px;padding:12px;margin-top:10px}.mini{width:56px;height:56px;border-radius:50%;flex:none;box-shadow:inset -8px -5px 12px #0008,0 0 14px #6bdcff33}.planet-card .info{flex:1;min-width:0}.planet-card strong{display:block}.planet-card small{display:block}.empty{text-align:center;color:var(--muted);padding:30px 10px}.notice{font-size:13px;color:var(--muted);margin-top:12px}
+@media(max-width:700px){.layout{grid-template-columns:1fr}.preview{min-height:290px}.panel{padding:15px}.planet-wrap{transform:scale(.88)}}
+</style>
+</head>
+<body>
+<header><h1>🌌 Criador de Universos</h1><p>Seu espaço. Suas regras. Seus planetas!</p></header>
+<main>
+<nav class="tabs" aria-label="Navegação">
+<button class="tab active" data-tab="create">🪐 Criar planeta</button>
+<button class="tab" data-tab="collection">🌠 Meus planetas</button>
+<button class="tab" data-tab="system">☀️ Meu sistema solar</button>
+</nav>
+<section id="create" class="panel">
+<h2 style="margin-top:0">Vamos criar um mundo?</h2>
+<div class="layout">
+<div>
+<div class="field"><label for="planetName">Nome do planeta</label><input id="planetName" maxlength="24" value="Planeta Azul" placeholder="Ex.: Zorion"></div>
+<div class="field"><label for="planetColor">Cor principal</label><input id="planetColor" type="color" value="#287dcc"></div>
+<div class="field"><label for="planetSize">Tamanho: <span id="sizeText">Médio</span></label><input id="planetSize" type="range" min="130" max="230" value="190"></div>
+<div class="field"><label for="water">Quantidade de água: <span id="waterText">Muita</span></label><input id="water" type="range" min="0" max="100" value="70"></div>
+<div class="field"><label for="terrain">Terreno</label><select id="terrain"><option value="forest">🌳 Florestas</option><option value="desert">🏜️ Desertos</option><option value="ice">❄️ Gelo</option><option value="lava">🌋 Vulcões</option><option value="rock">⛰️ Rochoso</option></select></div>
+<div class="field"><label for="atmosphere">Atmosfera</label><select id="atmosphere"><option>Respirável</option><option>Tóxica</option><option>Fina</option><option>Sem atmosfera</option></select></div>
+<div class="field"><label><input id="hasRing" type="checkbox" style="width:auto;accent-color:#a78bfa"> Adicionar anéis</label></div>
+<div class="actions"><button class="primary" id="save">✨ Salvar planeta</button><button id="reset">Limpar</button></div>
+<p class="notice">Suas criações ficam salvas neste aparelho e navegador.</p>
+</div>
+<div class="preview" aria-label="Prévia do planeta">
+<div class="stars"></div><div class="planet-wrap"><div class="ring" id="ring"></div><div class="planet" id="planet"><i class="continent c1"></i><i class="continent c2"></i><i class="continent c3"></i></div></div>
+<div class="planet-name" id="previewName">Planeta Azul</div>
+</div>
+</div>
+</section>
+<section id="collection" class="panel hidden"><h2 style="margin-top:0">🌠 Meus planetas</h2><p class="muted">Todos os mundos que você criou aparecem aqui.</p><div id="planetList"></div></section>
+<section id="system" class="panel hidden"><h2 style="margin-top:0">☀️ Meu sistema solar</h2><p class="muted">Veja os planetas que você salvou reunidos no seu espaço.</p><div class="preview" style="min-height:230px;flex-direction:row;flex-wrap:wrap;gap:15px;padding:22px" id="solarPreview"><div class="stars"></div><p style="z-index:1">Salve planetas para montar seu sistema solar!</p></div></section>
+</main>
+<script>
+const $=id=>document.getElementById(id);
+const fields=['planetName','planetColor','planetSize','water','terrain','atmosphere','hasRing'];
+let planets=[];
+try{planets=JSON.parse(localStorage.getItem('criadorUniversosPlanetas')||'[]')}catch(e){planets=[]}
+function terrainColor(){return ({forest:'#63b96b',desert:'#d6a45e',ice:'#cceeff',lava:'#e46b43',rock:'#9b9ca9'})[$('terrain').value]}
+function update(){
+ const size=+$('planetSize').value, water=+$('water').value, color=$('planetColor').value;
+ $('sizeText').textContent=size<165?'Pequeno':size<205?'Médio':'Gigante';
+ $('waterText').textContent=water<20?'Quase nenhuma':water<55?'Pouca':water<80?'Bastante':'Muita';
+ $('planet').style.width=size+'px';$('planet').style.height=size+'px';
+ $('planet').style.background='linear-gradient(145deg,'+lighten(color)+' 0%,'+color+' 62%,#101c45 100%)';
+ document.querySelectorAll('.continent').forEach(el=>el.style.background=terrainColor());
+ document.querySelectorAll('.continent').forEach(el=>el.style.opacity=String(Math.max(.12,1-water/140)));
+ $('ring').style.display=$('hasRing').checked?'block':'none';
+ $('previewName').textContent=$('planetName').value.trim()||'Planeta sem nome';
+}
+function lighten(hex){let n=parseInt(hex.slice(1),16),r=Math.min(255,((n>>16)&255)+55),g=Math.min(255,((n>>8)&255)+55),b=Math.min(255,(n&255)+55);return '#'+[r,g,b].map(v=>v.toString(16).padStart(2,'0')).join('')}
+fields.forEach(id=>$(id).addEventListener('input',update));fields.forEach(id=>$(id).addEventListener('change',update));
+document.querySelectorAll('.tab').forEach(btn=>btn.addEventListener('click',()=>{document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active',b===btn));['create','collection','system'].forEach(id=>$(id).classList.toggle('hidden',id!==btn.dataset.tab));if(btn.dataset.tab==='collection')renderList();if(btn.dataset.tab==='system')renderSystem()}));
+function current(){return {id:Date.now(),name:$('planetName').value.trim()||'Planeta sem nome',color:$('planetColor').value,size:+$('planetSize').value,water:+$('water').value,terrain:$('terrain').value,atmosphere:$('atmosphere').value,ring:$('hasRing').checked}}
+$('save').addEventListener('click',()=>{const p=current();planets.push(p);localStorage.setItem('criadorUniversosPlanetas',JSON.stringify(planets));$('save').textContent='✓ Planeta salvo!';setTimeout(()=>$('save').textContent='✨ Salvar planeta',1400)});
+$('reset').addEventListener('click',()=>{$('planetName').value='Novo Planeta';$('planetColor').value='#287dcc';$('planetSize').value=190;$('water').value=70;$('terrain').value='forest';$('atmosphere').value='Respirável';$('hasRing').checked=false;update()});
+function renderList(){const list=$('planetList');list.innerHTML='';if(!planets.length){list.innerHTML='<div class="empty">Ainda não há planetas. Crie seu primeiro mundo! 🪐</div>';return}planets.forEach(p=>{const card=document.createElement('div');card.className='planet-card';const dot=document.createElement('div');dot.className='mini';dot.style.background='linear-gradient(145deg,'+lighten(p.color)+','+p.color+')';const info=document.createElement('div');info.className='info';const name=document.createElement('strong');name.textContent=p.name;const desc=document.createElement('small');desc.textContent='Tamanho '+(p.size<165?'pequeno':p.size<205?'médio':'gigante')+' • '+p.atmosphere;info.append(name,desc);const del=document.createElement('button');del.textContent='Excluir';del.addEventListener('click',()=>{planets=planets.filter(x=>x.id!==p.id);localStorage.setItem('criadorUniversosPlanetas',JSON.stringify(planets));renderList();});card.append(dot,info,del);list.append(card)})}
+function renderSystem(){const area=$('solarPreview');area.innerHTML='<div class="stars"></div>';if(!planets.length){const msg=document.createElement('p');msg.style.zIndex='1';msg.textContent='Salve planetas para montar seu sistema solar!';area.append(msg);return}planets.forEach((p,i)=>{const d=document.createElement('div');d.style.cssText='z-index:1;width:'+Math.max(36,Math.min(90,p.size/2))+'px;height:'+Math.max(36,Math.min(90,p.size/2))+'px;border-radius:50%;background:linear-gradient(145deg,'+lighten(p.color)+','+p.color+');box-shadow:inset -10px -7px 14px #0008,0 0 18px '+p.color+'66;';d.title=p.name;area.append(d)})}
+update();
+</script>
+</body>
+</html>
