@@ -1,4 +1,4 @@
-const CACHE_NAME = 'anti-tedio-v4';
+const CACHE_NAME = 'anti-tedio-v5';
 const APP_FILES = [
   './',
   './index.html',
