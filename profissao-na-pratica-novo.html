@@ -150,13 +150,63 @@ function buildLessons(p){
 }
 function buildQuestion(p,i){
  const base=p.questions[i%p.questions.length];
+ const question=base[0];
  const frames=[
- "Você está começando sua rotina de trabalho. "+base[0],
- "Um detalhe inesperado aparece durante o atendimento. "+base[0],
- "Imagine que você precisa explicar sua decisão a um colega. "+base[0],
- "Em uma situação mais complexa, "+base[0].charAt(0).toLowerCase()+base[0].slice(1)
+ "Você está começando sua rotina de trabalho. "+question,
+ "Um detalhe inesperado aparece durante o atendimento. "+question,
+ "Imagine que você precisa explicar sua decisão a um colega. "+question,
+ "Em uma situação mais complexa, "+question.charAt(0).toLowerCase()+question.slice(1)
  ];
- return {q:frames[i%frames.length],a:base[1],ok:base[2],why:base[3]};
+ const topic=(question+" "+p.n).toLowerCase();
+ let pool;
+ if(/capacete|equipamento|moto|dirig|pilot|trânsito|chuva|cansad|álcool|fumaça|emergência|risco|segurança/.test(topic)){
+  pool=[
+   "Continuar com cautela, mesmo sem confirmar se as condições estão realmente seguras.",
+   "Esperar um pouco e decidir no momento, sem buscar orientação ou uma alternativa segura.",
+   "Escolher a opção mais rápida e avaliar os riscos somente depois.",
+   "Seguir viagem se o problema parecer pequeno, sem verificar as condições primeiro."
+  ];
+ }else if(/cliente|atendimento|pedido|preço|produto|visitante|tutor|paciente|entrega|cozinha|equipe/.test(topic)){
+  pool=[
+   "Dar uma resposta provável para não atrasar o atendimento, mesmo sem confirmar os detalhes.",
+   "Tentar resolver sozinho primeiro e só avisar a equipe se o problema continuar.",
+   "Usar como referência um caso parecido, sem conferir se as mesmas condições se aplicam.",
+   "Concluir o atendimento com as informações disponíveis, sem confirmar a dúvida principal."
+  ];
+ }else if(/program|erro|funcion|reparo|barulho|manuten|ferrament/.test(topic)){
+  pool=[
+   "Fazer várias mudanças de uma vez e conferir o resultado somente no final.",
+   "Repetir a solução que costuma funcionar, sem investigar a causa do problema.",
+   "Alterar uma parte relacionada sem testar se ela é a origem da falha.",
+   "Continuar o procedimento habitual mesmo sem confirmar se ele serve para este caso."
+  ];
+ }else if(/aluno|professor|aprendiz|explica|turma/.test(topic)){
+  pool=[
+   "Repetir a mesma explicação sem descobrir qual parte ainda não ficou clara.",
+   "Avançar para a próxima atividade e deixar a dúvida para outro momento.",
+   "Dar mais exemplos do mesmo tipo sem verificar se ajudam aquele aluno.",
+   "Pedir que a pessoa tente novamente sem esclarecer a dificuldade."
+  ];
+ }else if(/animal|veterin|dent|saúde|tratamento|doente|dor/.test(topic)){
+  pool=[
+   "Sugerir um cuidado geral antes de fazer a avaliação necessária.",
+   "Usar como referência um caso parecido, sem avaliar esta situação específica.",
+   "Indicar uma medida comum sem confirmar se ela é adequada para aquela pessoa ou animal.",
+   "Adiar a avaliação e presumir que o problema vai melhorar sozinho."
+  ];
+ }else{
+  pool=[
+   "Agir com base no que costuma funcionar, sem confirmar se todos os detalhes se aplicam.",
+   "Resolver a situação rapidamente e conferir as informações somente depois.",
+   "Seguir o procedimento habitual sem verificar se existe alguma exceção.",
+   "Escolher a alternativa mais simples sem avaliar todas as consequências."
+  ];
+ }
+ const correct=base[1][base[2]];
+ const wrong=[pool[i%pool.length],pool[(i+2)%pool.length]];
+ const options=[{text:correct,good:true},...wrong.map(text=>({text,good:false}))];
+ for(let j=options.length-1;j>0;j--){const k=Math.floor(Math.random()*(j+1));[options[j],options[k]]=[options[k],options[j]];}
+ return {q:frames[i%frames.length],a:options.map(x=>x.text),ok:options.findIndex(x=>x.good),why:base[3]};
 }
 function openCourse(p){
  const k=keyFor(p);if(!courseStates[k])courseStates[k]={p,index:0,mode:"lesson",answered:false,score:0,examIndex:0,examScore:0,examAnswers:[]};
