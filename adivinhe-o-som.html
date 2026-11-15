@@ -1,96 +1,48 @@
 <!doctype html>
 <html lang="pt-BR">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#635bdb">
-<title>Adivinhe o Som!</title>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#635bdb"><title>Adivinhe o Som!</title>
 <style>
-:root{color-scheme:light;--ink:#25243a;--muted:#77758c;--purple:#635bdb;--purple2:#eeeefe;--green:#18885c;--red:#c64d59}
-*{box-sizing:border-box}body{margin:0;min-height:100vh;font-family:system-ui,-apple-system,Segoe UI,sans-serif;background:linear-gradient(145deg,#f5f3ff,#edf7ff);color:var(--ink);display:grid;place-items:center;padding:18px}
-.app{width:min(100%,520px);background:white;border-radius:28px;padding:25px;box-shadow:0 16px 50px #39307818}
-.top{display:flex;justify-content:space-between;align-items:center;gap:10px}.tag{font-size:12px;font-weight:800;color:var(--purple);background:var(--purple2);padding:8px 12px;border-radius:99px}
-h1{font-size:clamp(27px,7vw,36px);margin:20px 0 6px;text-align:center}.sub{text-align:center;color:var(--muted);margin:0 0 22px}
-.progress{height:9px;background:#eeeefa;border-radius:20px;overflow:hidden;margin:12px 0 7px}.bar{height:100%;width:0;background:linear-gradient(90deg,#8278f4,#4db9c8);transition:width .25s}
-.count{text-align:center;color:var(--muted);font-size:13px}
-.soundbox{background:#f7f6ff;border:1px solid #e9e7ff;border-radius:22px;padding:24px 16px;text-align:center;margin:22px 0}
-.soundicon{font-size:54px;line-height:1.2}.soundbox p{color:var(--muted);margin:8px 0 16px}
-button{font:inherit;border:0;cursor:pointer;touch-action:manipulation}
-.listen{background:var(--purple);color:white;padding:14px 22px;border-radius:15px;font-weight:800;font-size:16px;box-shadow:0 5px 0 #4942ad}
-.listen:active,.option:active,.next:active{transform:translateY(2px);box-shadow:none}
-.options{display:grid;grid-template-columns:1fr 1fr;gap:11px}
-.option{background:#fff;border:2px solid #e9e8f2;border-radius:15px;padding:14px 8px;font-weight:750;color:var(--ink);min-height:56px}
-.option:disabled{cursor:default;opacity:.8}
-.option.correct{border-color:#5cbd91;background:#edfff5;color:#12633f}.option.wrong{border-color:#e48b93;background:#fff1f2;color:#a52d3b}
-.feedback{min-height:52px;text-align:center;padding:13px 4px 0;font-weight:700;color:var(--muted)}
-.next{display:none;width:100%;margin-top:10px;padding:14px;border-radius:15px;background:#1d9a70;color:white;font-weight:800}
-.finish{text-align:center;padding:25px 8px}.finish .big{font-size:64px}.finish h2{font-size:27px;margin:8px 0}.finish p{color:var(--muted);line-height:1.5}
-.restart{background:var(--purple);color:white;padding:14px 22px;border-radius:15px;font-weight:800;margin-top:10px}
-.note{font-size:11px;color:#9290a1;text-align:center;margin:18px 0 0;line-height:1.4}
-@media(max-width:380px){.app{padding:18px}.option{font-size:14px}}
-</style>
-</head>
-<body>
-<main class="app">
- <div class="top"><span class="tag">🎧 DESAFIO DOS SONS</span><span class="tag" id="score">⭐ 0 pontos</span></div>
- <h1>Adivinhe o Som!</h1>
- <p class="sub">Escute com atenção e descubra qual animal está fazendo esse som.</p>
- <section id="game">
-  <div class="progress"><div class="bar" id="bar"></div></div>
-  <div class="count" id="count">Pergunta 1 de 20</div>
-  <div class="soundbox">
-   <div class="soundicon">🔊</div>
-   <p>Toque no botão para ouvir o som misterioso.</p>
-   <button class="listen" id="listen">▶ Ouvir som</button>
-  </div>
-  <div class="options" id="options"></div>
-  <div class="feedback" id="feedback" aria-live="polite">Escolha uma das quatro opções!</div>
-  <button class="next" id="next">Próxima pergunta →</button>
- </section>
- <section class="finish" id="finish" hidden>
-  <div class="big">🏆</div><h2>Parabéns, você terminou!</h2>
-  <p id="result"></p><button class="restart" id="restart">↻ Jogar de novo</button>
- </section>
- <p class="note">Os sons são carregados pela internet. Se algum não tocar, confira sua conexão e tente novamente.</p>
-</main>
+*{box-sizing:border-box}body{margin:0;min-height:100vh;font-family:system-ui, sans-serif;background:linear-gradient(145deg,#f5f3ff,#edf7ff);color:#25243a;display:grid;place-items:center;padding:18px}.app{width:min(100%,520px);background:white;border-radius:26px;padding:24px;box-shadow:0 16px 50px #39307818}.tag{display:inline-block;font-size:12px;font-weight:800;color:#635bdb;background:#eeeefe;padding:8px 12px;border-radius:99px}h1{text-align:center;margin:20px 0 6px;font-size:32px}.sub{text-align:center;color:#77758c;margin:0 0 22px}.progress{height:9px;background:#eeeefa;border-radius:20px;overflow:hidden;margin:12px 0 7px}.bar{height:100%;width:0;background:linear-gradient(90deg,#8278f4,#4db9c8);transition:width .25s}.count{text-align:center;color:#77758c;font-size:13px}.soundbox{background:#f7f6ff;border:1px solid #e9e7ff;border-radius:22px;padding:24px 16px;text-align:center;margin:22px 0}.soundicon{font-size:54px}.soundbox p{color:#77758c;margin:8px 0 16px}button{font:inherit;border:0;cursor:pointer;touch-action:manipulation}.listen{background:#635bdb;color:white;padding:14px 22px;border-radius:15px;font-weight:800;font-size:16px;box-shadow:0 5px 0 #4942ad}.options{display:grid;grid-template-columns:1fr 1fr;gap:11px}.option{background:white;border:2px solid #e9e8f2;border-radius:15px;padding:14px 8px;font-weight:750;color:#25243a;min-height:56px}.option:disabled{cursor:default;opacity:.8}.option.correct{border-color:#5cbd91;background:#edfff5;color:#12633f}.option.wrong{border-color:#e48b93;background:#fff1f2;color:#a52d3b}.feedback{min-height:52px;text-align:center;padding:13px 4px 0;font-weight:700;color:#77758c}.next{display:none;width:100%;margin-top:10px;padding:14px;border-radius:15px;background:#1d9a70;color:white;font-weight:800}.finish{text-align:center;padding:25px 8px}.finish .big{font-size:64px}.finish h2{font-size:27px}.finish p{color:#77758c;line-height:1.5}.restart{background:#635bdb;color:white;padding:14px 22px;border-radius:15px;font-weight:800;margin-top:10px}.note{font-size:11px;color:#9290a1;text-align:center;margin:18px 0 0;line-height:1.4}@media(max-width:380px){.app{padding:18px}.option{font-size:14px}}
+</style></head><body><main class="app">
+<span class="tag">🎧 DESAFIO DOS SONS</span><h1>Adivinhe o Som!</h1><p class="sub">Escute com atenção e descubra qual animal está fazendo esse som.</p>
+<section id="game"><div class="progress"><div class="bar" id="bar"></div></div><div class="count" id="count">Pergunta 1 de 20</div>
+<div class="soundbox"><div class="soundicon">🔊</div><p>Toque no botão para ouvir o som misterioso.</p><button class="listen" id="listen">▶ Ouvir som</button></div>
+<div class="options" id="options"></div><div class="feedback" id="feedback" aria-live="polite">Escolha uma das quatro opções!</div><button class="next" id="next">Próxima pergunta →</button></section>
+<section class="finish" id="finish" hidden><div class="big">🎉</div><h2>Parabéns, você terminou!</h2><p>Você completou os 20 sons de animais!</p><button class="restart" id="restart">↻ Jogar de novo</button></section>
+<p class="note">Os sons precisam de conexão com a internet para tocar.</p></main>
 <script>
-const base='https://freeanimalsounds.org/wp-content/uploads/';
 const animals=[
- ['Cachorro',base+'dlm_uploads/2023/01/Bluthund_jault1.mp3','🐶'],
- ['Gato',base+'2023/01/Katze_miaut.mp3','🐱'],
- ['Vaca',base+'2023/01/Kuh_muht.mp3','🐮'],
- ['Galinha',base+'2023/01/huehner-1.mp3','🐔'],
- ['Leão',base+'2023/01/Lowe.mp3','🦁'],
- ['Cavalo',base+'2023/01/pferd_whinnert.mp3','🐴'],
- ['Ovelha',base+'2023/01/schafe.mp3','🐑'],
- ['Elefante',base+'dlm_uploads/2023/01/Elefant.mp3','🐘'],
- ['Pato',base+'2023/01/Ente_quackt.mp3','🦆'],
- ['Lobo',base+'2023/01/wolf.mp3','🐺'],
- ['Macaco',base+'2023/01/Kapuzineraffe.mp3','🐵'],
- ['Porco',base+'dlm_uploads/2023/01/schwein.mp3','🐷'],
- ['Cascavel',base+'2023/01/rattlesnake.mp3','🐍'],
- ['Grilo',base+'2023/01/cricket.mp3','🦗'],
- ['Abelha',base+'2023/01/bee.mp3','🐝'],
- ['Cabra',base+'2023/01/Ziege.mp3','🐐'],
- ['Crocodilo',base+'2023/01/Krokodil.mp3','🐊'],
- ['Papagaio',base+'2023/01/RedParot.mp3','🦜'],
- ['Galo',base+'2023/01/hahn_kikeriki.mp3','🐓'],
- ['Bisão',base+'2023/01/bison.mp3','🦬']
+['Cachorro','https://freeanimalsounds.org/wp-content/uploads/2017/07/Bluthund_jault.mp3','🐶'],
+['Vaca','https://freeanimalsounds.org/wp-content/uploads/2017/07/Rinder_muh.mp3','🐮'],
+['Ovelha','https://freeanimalsounds.org/wp-content/uploads/2017/07/schafe.mp3','🐑'],
+['Galinha','https://freeanimalsounds.org/wp-content/uploads/2017/07/huehner.mp3','🐔'],
+['Porco','https://freeanimalsounds.org/wp-content/uploads/2017/07/schwein.mp3','🐷'],
+['Cabra','https://freeanimalsounds.org/wp-content/uploads/2017/07/Ziege.mp3','🐐'],
+['Cavalo','https://freeanimalsounds.org/wp-content/uploads/2017/07/pferd_whinnert.mp3','🐴'],
+['Pato','https://freeanimalsounds.org/wp-content/uploads/2017/07/Ente_quackt.mp3','🦆'],
+['Elefante','https://freeanimalsounds.org/wp-content/uploads/2017/07/Elefant.mp3','🐘'],
+['Bisão','https://freeanimalsounds.org/wp-content/uploads/2017/07/bison.mp3','🦬'],
+['Lobo','https://freeanimalsounds.org/wp-content/uploads/2017/07/wolf.mp3','🐺'],
+['Cascavel','https://freeanimalsounds.org/wp-content/uploads/2017/07/rattlesnake.mp3','🐍'],
+['Rinoceronte','https://freeanimalsounds.org/wp-content/uploads/2017/07/Rhinozerus.mp3','🦏'],
+['Peru','https://freeanimalsounds.org/wp-content/uploads/2023/01/truthahn.mp3','🦃'],
+['Touro','https://freeanimalsounds.org/wp-content/uploads/2023/01/ochse.mp3','🐂'],
+['Ganso','https://freeanimalsounds.org/wp-content/uploads/2023/01/Gaense.mp3','🪿'],
+['Galo','https://freeanimalsounds.org/wp-content/uploads/2017/07/hahn_kikeriki.mp3','🐓'],
+['Papagaio','https://freeanimalsounds.org/wp-content/uploads/2017/07/RedParot.mp3','🦜'],
+['Corvo','https://freeanimalsounds.org/wp-content/uploads/2017/07/rabe.mp3','🐦‍⬛'],
+['Cordeiro','https://freeanimalsounds.org/wp-content/uploads/2017/07/schaf.mp3','🐏']
 ];
-let deck=[],index=0,points=0,answered=false,currentAudio=null;
+let deck=[],index=0,currentAudio=null,answered=false;
 const $=id=>document.getElementById(id);
 function shuffle(a){let b=[...a];for(let i=b.length-1;i>0;i--){let j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]]}return b}
-function start(){deck=shuffle(animals);index=0;points=0;$('score').textContent='⭐ 0 pontos';$('game').hidden=false;$('finish').hidden=true;render()}
-function render(){
- answered=false;const animal=deck[index];$('count').textContent='Pergunta '+(index+1)+' de 20';$('bar').style.width=(index/20*100)+'%';$('feedback').textContent='Escolha uma das quatro opções!';$('feedback').style.color='';$('next').style.display='none';$('listen').disabled=false;
- const others=shuffle(animals.filter(a=>a!==animal)).slice(0,3);const choices=shuffle([animal,...others]);$('options').innerHTML='';
- choices.forEach(a=>{const b=document.createElement('button');b.className='option';b.textContent=a[2]+'  '+a[0];b.addEventListener('click',()=>choose(a,b));$('options').appendChild(b)});
- if(currentAudio){currentAudio.pause();currentAudio=null}
-}
-function play(){const a=deck[index];if(currentAudio){currentAudio.pause();currentAudio.currentTime=0}currentAudio=new Audio(a[1]);currentAudio.onerror=()=>{$('feedback').textContent='Não consegui carregar esse áudio. Toque em “Ouvir som” para tentar de novo.';$('feedback').style.color='#a52d3b'};currentAudio.play().catch(()=>{$('feedback').textContent='O áudio não carregou. Verifique a conexão e tente novamente.';$('feedback').style.color='#a52d3b'})}
-function choose(a,button){if(answered)return;const right=deck[index];if(a===right){answered=true;points++;$('score').textContent='⭐ '+points+' pontos';button.classList.add('correct');$('feedback').textContent='Isso mesmo! Você acertou! 🎉';$('feedback').style.color='#18885c';document.querySelectorAll('.option').forEach(b=>b.disabled=true);$('next').style.display='block';$('next').textContent=index===19?'Ver resultado 🏆':'Próxima pergunta →'}else{button.classList.add('wrong');button.disabled=true;$('feedback').textContent='Quase! Tente outra opção. 💡';$('feedback').style.color='#b33d4b'}}
-function next(){if(index<19){index++;render()}else{ $('game').hidden=true;$('finish').hidden=false;$('bar').style.width='100%';$('result').textContent='Você acertou '+points+' de 20 sons. '+(points===20?'Incrível! Você conhece muito bem os sons dos animais!':'Muito bem por completar o desafio! Que tal jogar mais uma vez?')}}
+function start(){deck=shuffle(animals);index=0;$('game').hidden=false;$('finish').hidden=true;render()}
+function render(){answered=false;const animal=deck[index];$('count').textContent='Pergunta '+(index+1)+' de 20';$('bar').style.width=(index/20*100)+'%';$('feedback').textContent='Escolha uma das quatro opções!';$('feedback').style.color='#77758c';$('next').style.display='none';$('listen').disabled=false;if(currentAudio){currentAudio.pause();currentAudio=null}
+const choices=shuffle([animal,...shuffle(animals.filter(a=>a!==animal)).slice(0,3)]);$('options').innerHTML='';choices.forEach(a=>{const b=document.createElement('button');b.className='option';b.textContent=a[2]+'  '+a[0];b.addEventListener('click',()=>choose(a,b));$('options').appendChild(b)})}
+function play(){const a=deck[index];if(currentAudio){currentAudio.pause();currentAudio.currentTime=0}currentAudio=new Audio(a[1]);currentAudio.preload='auto';currentAudio.onerror=()=>{$('feedback').textContent='Esse áudio não carregou. Tente novamente.';$('feedback').style.color='#b33d4b'};currentAudio.play().catch(()=>{$('feedback').textContent='Não foi possível tocar. Confira a internet e tente novamente.';$('feedback').style.color='#b33d4b'})}
+function choose(a,button){if(answered)return;if(a===deck[index]){answered=true;button.classList.add('correct');$('feedback').textContent='Isso mesmo! Você acertou! 🎉';$('feedback').style.color='#18885c';document.querySelectorAll('.option').forEach(b=>b.disabled=true);$('next').style.display='block';$('next').textContent=index===19?'Ver conclusão 🏆':'Próxima pergunta →'}else{button.classList.add('wrong');button.disabled=true;$('feedback').textContent='Quase! Tente outra opção. 💡';$('feedback').style.color='#b33d4b'}}
+function next(){if(index<19){index++;render()}else{$('game').hidden=true;$('finish').hidden=false;$('bar').style.width='100%';if(currentAudio){currentAudio.pause();currentAudio=null}}}
 $('listen').addEventListener('click',play);$('next').addEventListener('click',next);$('restart').addEventListener('click',start);start();
-</script>
-</body>
-</html>
+</script></body></html>
