@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#10251f"><title>Treino Comigo</title>
+<style>
+:root{--bg:#f3f7f4;--ink:#17251f;--muted:#68766f;--green:#16734d;--mint:#dff4e8;--card:#fff;--line:#e2ebe5}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:16px system-ui,-apple-system,Segoe UI,sans-serif}
+header{background:linear-gradient(135deg,#10251f,#176342);color:white;padding:28px 20px 34px;border-radius:0 0 28px 28px}
+.wrap{max-width:760px;margin:auto;padding:0 16px}h1{font-size:30px;margin:4px 0}header p{color:#d8eee1;margin:6px 0}
+main{padding:18px 0 40px}.card{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:18px;margin:14px 0;box-shadow:0 5px 18px #173b2510}
+h2{font-size:19px;margin:0 0 12px}.muted{color:var(--muted);font-size:14px}label{display:block;font-weight:650;margin:12px 0 6px}
+input,select{width:100%;padding:13px;border:1px solid #ccd9d0;border-radius:12px;font:inherit;background:white;color:var(--ink)}
+button{border:0;border-radius:13px;padding:13px 16px;background:var(--green);color:white;font-weight:700;font:inherit;cursor:pointer}
+button.secondary{background:var(--mint);color:#155b3c}button:disabled{opacity:.5}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.choice{border:1px solid var(--line);padding:13px;border-radius:14px;background:white;text-align:left;color:var(--ink)}.choice.active{border:2px solid var(--green);background:#effaf3}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.row>*{flex:1}
+.item{display:flex;justify-content:space-between;gap:12px;padding:12px 0;border-bottom:1px solid var(--line)}.item:last-child{border:0}
+.pill{background:var(--mint);color:#155b3c;border-radius:99px;padding:5px 10px;font-size:12px;font-weight:700}
+.hidden{display:none}.hero{font-size:42px}.notice{background:#fff8df;border:1px solid #f0df9f;border-radius:14px;padding:12px;font-size:13px;color:#66521a}
+#status{min-height:22px;color:var(--green);font-size:14px;margin-top:9px}
+@media(max-width:480px){.grid{grid-template-columns:1fr 1fr}header{padding-top:22px}}
+</style></head>
+<body>
+<header><div class="wrap"><div class="hero">💪</div><h1>Treino Comigo</h1><p>Movimente-se no seu ritmo. Seu parceiro de rotina saudável!</p></div></header>
+<main class="wrap">
+<section class="card" id="welcome">
+<h2>Vamos preparar seu espaço?</h2><p class="muted">Conte um pouquinho sobre você para organizar atividades leves e adequadas. Não precisamos de peso nem de metas de emagrecimento.</p>
+<label for="name">Como podemos chamar você?</label><input id="name" maxlength="24" placeholder="Seu nome ou apelido">
+<label for="age">Qual é a sua idade?</label><input id="age" type="number" min="5" max="100" placeholder="Idade">
+<label for="level">Como você se sente com atividades físicas?</label><select id="level"><option value="iniciante">Estou começando</option><option value="regular">Já faço algumas atividades</option></select>
+<button style="width:100%;margin-top:16px" id="start">Entrar no app</button><div id="status"></div>
+</section>
+<section class="hidden" id="app">
+<div class="card"><div class="row"><div><div class="muted">OLÁ, <span id="userName">VOCÊ</span> 👋</div><h2>Seu espaço de atividades</h2></div><span class="pill">No seu ritmo</span></div><p class="muted">Escolha atividades que sejam confortáveis para você. Pare se sentir dor, tontura ou mal-estar.</p></div>
+<div class="card"><h2>Escolha o que gostaria de fazer</h2><div class="grid" id="activities">
+<button class="choice active" data-act="Alongamento leve">🧘 Alongamento leve</button><button class="choice" data-act="Caminhada tranquila">🚶 Caminhada</button><button class="choice" data-act="Dança livre">🎵 Dança livre</button><button class="choice" data-act="Pausa para se movimentar">🌿 Pausa ativa</button>
+</div><label for="time">Que horas quer receber um lembrete?</label><input id="time" type="time" value="17:00"><div class="row" style="margin-top:12px"><button id="saveReminder">Salvar lembrete</button><button class="secondary" id="notify">Ativar notificações</button></div><div id="reminderStatus" class="muted"></div><div class="notice" style="margin-top:12px">O lembrete deste protótipo funciona enquanto a página estiver aberta. O navegador pode limitar alarmes e notificações quando o app está fechado.</div></div>
+<div class="card"><h2>📅 Ideia de rotina</h2><div class="item"><span>Segunda</span><strong>Alongamento leve</strong></div><div class="item"><span>Terça</span><strong>Caminhada tranquila</strong></div><div class="item"><span>Quarta</span><strong>Descanso ou brincadeira ativa</strong></div><div class="item"><span>Quinta</span><strong>Dança livre</strong></div><div class="item"><span>Sexta</span><strong>Alongamento leve</strong></div><div class="item"><span>Fim de semana</span><strong>Escolha algo divertido</strong></div><p class="muted">É apenas uma sugestão flexível. Descanso também faz parte de uma rotina saudável.</p></div>
+<div class="card"><h2>🏅 Suas conquistas</h2><p id="doneText">Você ainda não concluiu uma atividade hoje.</p><button class="secondary" id="done">Concluí minha atividade!</button></div>
+</section>
+</main>
+<script>
+let chosen='Alongamento leve', alarmTimer=null, notificationReady=false, completed=0;
+const $=id=>document.getElementById(id);
+$('start').addEventListener('click',()=>{
+ const name=$('name').value.trim(), age=Number($('age').value);
+ if(!name||!age||age<5||age>100){$('status').textContent='Preencha um nome e uma idade válida para continuar.';return}
+ $('userName').textContent=name.toLocaleUpperCase('pt-BR');$('welcome').classList.add('hidden');$('app').classList.remove('hidden');
+});
+document.querySelectorAll('[data-act]').forEach(b=>b.addEventListener('click',()=>{
+ document.querySelectorAll('[data-act]').forEach(x=>x.classList.remove('active'));b.classList.add('active');chosen=b.dataset.act;
+}));
+$('notify').addEventListener('click',async()=>{
+ if(!('Notification' in window)){ $('reminderStatus').textContent='Este navegador não oferece notificações.';return}
+ const p=await Notification.requestPermission();notificationReady=p==='granted';
+ $('reminderStatus').textContent=notificationReady?'Notificações permitidas! Agora salve um horário.':'Permissão de notificação não concedida.';
+});
+$('saveReminder').addEventListener('click',()=>{
+ if(alarmTimer)clearTimeout(alarmTimer);
+ const t=$('time').value;if(!t){$('reminderStatus').textContent='Escolha um horário.';return}
+ const [h,m]=t.split(':').map(Number),now=new Date(),next=new Date();next.setHours(h,m,0,0);if(next<=now)next.setDate(next.getDate()+1);
+ const ms=next-now;
+ $('reminderStatus').textContent='Lembrete programado para '+t+'. Deixe esta página aberta.';
+ alarmTimer=setTimeout(()=>{
+  const msg='Ei, '+$('userName').textContent+'! Hora de '+chosen.toLowerCase()+'! Faça apenas se estiver confortável. 💚';
+  if(notificationReady)new Notification('Treino Comigo 💪',{body:msg});
+  else alert(msg);
+  if(navigator.vibrate)navigator.vibrate([250,120,250]);
+  $('reminderStatus').textContent='Lembrete enviado! Você pode programar outro horário.';
+ },ms);
+});
+$('done').addEventListener('click',()=>{completed++;$('doneText').textContent='Muito bem! '+completed+' atividade(s) marcada(s). Lembre-se: descansar também é importante. 🌟'});
+</script></body></html>
