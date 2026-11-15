@@ -56,6 +56,13 @@ textarea.field{min-height:78px;resize:vertical}
 .scene.is-selected{border:2px solid var(--purple);background:#eee9ff;color:#5738c9;box-shadow:0 0 0 3px #7657ee18}
 .scene small{display:block;font-weight:500;color:var(--muted);margin-top:3px}
 .edit-tools{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
+.photo-results{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:12px}
+.photo-card{border:2px solid transparent;border-radius:12px;overflow:hidden;background:#f7f5fc;padding:0;text-align:left;color:var(--ink)}
+.photo-card img{width:100%;height:125px;object-fit:cover;display:block}
+.photo-card span{display:block;padding:8px;font-size:12px;font-weight:700}
+.photo-card.is-selected{border-color:var(--purple);box-shadow:0 0 0 3px #7657ee20}
+.photo-status{font-size:12px;color:var(--muted);margin-top:9px}
+@media(min-width:600px){.photo-results{grid-template-columns:repeat(3,minmax(0,1fr))}}
 .edit-tools .field{min-width:0}
 @media(max-width:740px){.layout{grid-template-columns:1fr}.app{padding-top:12px}.panel{padding:13px}.bottom{gap:2px}.navbtn{padding:8px 12px}}
 </style>
@@ -77,6 +84,10 @@ textarea.field{min-height:78px;resize:vertical}
 </div>
 <div class="row"><label for="color">Cor</label><input class="color" id="color" type="color" value="#27213d"><label for="size">Tamanho</label><input id="size" type="range" min="2" max="35" value="6"><span id="sizeValue">6</span></div>
 <div class="canvas-wrap"><canvas id="canvas" width="900" height="675"></canvas></div>
+<label class="label" for="description">O que você desenhou?</label>
+<textarea id="description" class="field" placeholder="Ex.: Desenhei um cachorro astronauta..."></textarea>
+<label class="label" for="imageIdea">Como você imagina a imagem pronta?</label>
+<textarea id="imageIdea" class="field" placeholder="Ex.: Quero que pareça uma cena de filme, com o cachorro no centro..."></textarea>
 <div class="row"><button type="button" class="action" id="whiteBg">Fundo branco</button><button type="button" class="action" id="transparentBg">Fundo transparente</button></div>
 </section>
 <aside class="panel">
@@ -89,16 +100,11 @@ textarea.field{min-height:78px;resize:vertical}
 <button type="button" class="style" data-style="Aquarela" aria-pressed="false"><span>🖌️</span>Aquarela<small>Pintura suave</small></button>
 <button type="button" class="style" data-style="Pixel art" aria-pressed="false"><span>👾</span>Pixel art<small>Blocos de pixels</small></button>
 </div>
-<label class="label">Escolha um cenário para o fundo</label>
-<div class="scenes" id="sceneChoices">
-<button type="button" class="scene is-selected" data-scene="white" aria-pressed="true">⬜ Branco<small>Fundo simples</small></button>
-<button type="button" class="scene" data-scene="sky" aria-pressed="false">☁️ Céu<small>Nuvens e céu azul</small></button>
-<button type="button" class="scene" data-scene="sunset" aria-pressed="false">🌅 Pôr do sol<small>Cores quentes</small></button>
-<button type="button" class="scene" data-scene="forest" aria-pressed="false">🌳 Floresta<small>Natureza verde</small></button>
-<button type="button" class="scene" data-scene="space" aria-pressed="false">🌌 Espaço<small>Estrelas e noite</small></button>
-<button type="button" class="scene" data-scene="beach" aria-pressed="false">🏖️ Praia<small>Mar e areia</small></button>
-</div>
-<label class="label" for="description">Nome da sua criação (opcional)</label><textarea id="description" class="field" placeholder="Ex.: Meu dragão colorido..."></textarea>
+<label class="label" for="backgroundQuery">Procure uma foto para o fundo</label>
+<div class="row" style="margin-top:0"><input id="backgroundQuery" class="field" placeholder="Ex.: cidade abandonada, floresta, cidade à noite..." style="flex:1;min-width:0"><button type="button" class="primary" id="searchPhotos">Buscar fotos</button></div>
+<div id="photoStatus" class="photo-status">Escreva o tipo de lugar que você quer e toque em Buscar fotos.</div>
+<div id="photoResults" class="photo-results"></div>
+<p class="note">As fotos são pesquisadas no Wikimedia Commons. Escolha uma imagem para usá-la como fundo.</p>
 <button type="button" class="primary full" id="createImage">✦ Criar imagem</button>
 <p class="note">Os estilos aplicam efeitos simples ao seu desenho no próprio aparelho. Não é uma geração por IA.</p>
 </aside>
@@ -119,14 +125,7 @@ textarea.field{min-height:78px;resize:vertical}
 </section>
 </main>
 
-<main id="page-photos" class="page hidden"><section class="panel"><h2>Fotos</h2><p class="sub">Escolha um cenário para usar como fundo da sua criação.</p><div class="scenes">
-<button type="button" class="scene is-selected" data-scene-page="white">⬜ Fundo branco<small>Simples e limpo</small></button>
-<button type="button" class="scene" data-scene-page="sky">☁️ Céu<small>Azul e nuvens</small></button>
-<button type="button" class="scene" data-scene-page="sunset">🌅 Pôr do sol<small>Céu colorido</small></button>
-<button type="button" class="scene" data-scene-page="forest">🌳 Floresta<small>Verde e natureza</small></button>
-<button type="button" class="scene" data-scene-page="space">🌌 Espaço<small>Estrelas</small></button>
-<button type="button" class="scene" data-scene-page="beach">🏖️ Praia<small>Mar e areia</small></button>
-</div></section></main>
+<main id="page-photos" class="page hidden"><section class="panel"><h2>Fotos</h2><p class="sub">Pesquise fotografias reais para usar como fundo.</p><div class="row"><input id="backgroundQueryTab" class="field" placeholder="Ex.: cidade abandonada, floresta..." style="flex:1;min-width:0"><button type="button" class="primary" id="searchPhotosTab">Buscar</button></div><div id="photoStatusTab" class="photo-status">Digite o lugar que você procura.</div><div id="photoResultsTab" class="photo-results"></div></section></main>
 
 <main id="page-mine" class="page hidden"><section class="panel"><h2>Minhas fotos</h2><p class="sub">Imagens que você finalizou no Artify.</p><div id="gallery" class="gallery"><div class="empty" style="grid-column:1/-1">🖼️<b>Suas fotos aparecerão aqui.</b>Crie uma imagem e toque em Finalizar.</div></div></section></main>
 </div>
@@ -141,7 +140,7 @@ textarea.field{min-height:78px;resize:vertical}
 'use strict';
 const $=id=>document.getElementById(id);
 const canvas=$('canvas'),ctx=canvas.getContext('2d');
-let activeTool='pen',activeStyle='Realista',color=$('color').value,brushSize=6,drawing=false,lastPoint=null,history=[],lastCreated=null,arts=[],scene='white';
+let activeTool='pen',activeStyle='Realista',color=$('color').value,brushSize=6,drawing=false,lastPoint=null,history=[],lastCreated=null,arts=[],scene='white',selectedPhoto=null,photoResults=[];
 try{arts=JSON.parse(localStorage.getItem('artify-arts')||'[]');if(!Array.isArray(arts))arts=[]}catch(e){arts=[]}
 function toast(message){const box=$('toast');box.textContent=message;box.classList.add('show');clearTimeout(toast.timer);toast.timer=setTimeout(()=>box.classList.remove('show'),2300)}
 function setPressed(buttons,chosen){buttons.forEach(button=>{const selected=button===chosen;button.classList.toggle('is-selected',selected);button.setAttribute('aria-pressed',String(selected))})}
@@ -158,34 +157,41 @@ function stopDrawing(){drawing=false;lastPoint=null}
 canvas.addEventListener('pointerup',stopDrawing);canvas.addEventListener('pointercancel',stopDrawing);canvas.addEventListener('lostpointercapture',stopDrawing);
 $('undo').addEventListener('click',()=>{const previous=history.pop();if(previous){ctx.putImageData(previous,0,0);toast('Último traço desfeito')}else toast('Nada para desfazer')});
 $('clear').addEventListener('click',()=>{saveHistory();ctx.clearRect(0,0,canvas.width,canvas.height);toast('Desenho limpo')});
-function selectScene(value){scene=value;document.querySelectorAll('[data-scene]').forEach(b=>{const on=b.dataset.scene===value;b.classList.toggle('is-selected',on);b.setAttribute('aria-pressed',String(on))});document.querySelectorAll('[data-scene-page]').forEach(b=>b.classList.toggle('is-selected',b.dataset.scenePage===value))}
+function selectScene(value){scene=value;selectedPhoto=null;document.querySelectorAll('[data-scene]').forEach(b=>{const on=b.dataset.scene===value;b.classList.toggle('is-selected',on);b.setAttribute('aria-pressed',String(on))});document.querySelectorAll('[data-scene-page]').forEach(b=>b.classList.toggle('is-selected',b.dataset.scenePage===value))}
 document.querySelectorAll('[data-scene]').forEach(b=>b.addEventListener('click',()=>{selectScene(b.dataset.scene);toast('Cenário selecionado')}));
-document.querySelectorAll('[data-scene-page]').forEach(b=>b.addEventListener('click',()=>{selectScene(b.dataset.scenePage);showPage('create');toast('Cenário selecionado')}));
+
 $('whiteBg').addEventListener('click',()=>{selectScene('white');toast('Fundo branco selecionado')});
 $('transparentBg').addEventListener('click',()=>{selectScene('transparent');toast('Fundo transparente selecionado')});
 function chooseStyle(style){activeStyle=style;document.querySelectorAll('[data-style]').forEach(b=>{const on=b.dataset.style===style;b.classList.toggle('is-selected',on);b.setAttribute('aria-pressed',String(on))})}
 document.querySelectorAll('[data-style]').forEach(b=>b.addEventListener('click',()=>{chooseStyle(b.dataset.style);toast('Modelo '+activeStyle+' selecionado')}));
 function showPage(page){['create','photos','mine'].forEach(name=>$('page-'+name).classList.toggle('hidden',name!==page));document.querySelectorAll('[data-page]').forEach(b=>{const on=b.dataset.page===page;b.classList.toggle('is-selected',on);b.setAttribute('aria-pressed',String(on))});window.scrollTo({top:0,behavior:'smooth'})}
 document.querySelectorAll('[data-page]').forEach(b=>b.addEventListener('click',()=>showPage(b.dataset.page)));
-function drawScene(c,kind){
-const w=900,h=675;
-if(kind==='transparent')return;
-if(kind==='sky'){const g=c.createLinearGradient(0,0,0,h);g.addColorStop(0,'#65c7ff');g.addColorStop(1,'#e8f8ff');c.fillStyle=g;c.fillRect(0,0,w,h);c.fillStyle='#fff';[[150,130,55],[220,125,70],[600,180,65],[670,175,80],[420,85,40]].forEach(([x,y,r])=>{c.beginPath();c.arc(x,y,r,0,Math.PI*2);c.fill()});}
-else if(kind==='sunset'){const g=c.createLinearGradient(0,0,0,h);g.addColorStop(0,'#593d91');g.addColorStop(.5,'#f58c91');g.addColorStop(1,'#ffd28a');c.fillStyle=g;c.fillRect(0,0,w,h);c.fillStyle='#ffe8a6';c.beginPath();c.arc(450,390,95,0,Math.PI*2);c.fill();c.fillStyle='#7c5a83';c.fillRect(0,530,w,145)}
-else if(kind==='forest'){const g=c.createLinearGradient(0,0,0,h);g.addColorStop(0,'#b8e6bd');g.addColorStop(1,'#28734b');c.fillStyle=g;c.fillRect(0,0,w,h);c.fillStyle='#205a3b';for(let x=40;x<920;x+=130){c.fillRect(x,300,28,375);c.beginPath();c.moveTo(x-65,350);c.lineTo(x+14,120);c.lineTo(x+95,350);c.fill()}}
-else if(kind==='space'){c.fillStyle='#11132f';c.fillRect(0,0,w,h);c.fillStyle='#fff';for(let i=0;i<100;i++){const x=(i*137)%900,y=(i*83)%675;c.beginPath();c.arc(x,y,(i%3)+1,0,Math.PI*2);c.fill()}c.fillStyle='#7657ee';c.beginPath();c.arc(680,180,95,0,Math.PI*2);c.fill();c.fillStyle='#f0a5e2';c.beginPath();c.arc(650,155,80,0,Math.PI*2);c.fill()}
-else if(kind==='beach'){const g=c.createLinearGradient(0,0,0,675);g.addColorStop(0,'#8edcff');g.addColorStop(.58,'#c4f1ff');g.addColorStop(.59,'#31a9d6');g.addColorStop(.82,'#1685bd');g.addColorStop(.83,'#f6d89c');g.addColorStop(1,'#eecb83');c.fillStyle=g;c.fillRect(0,0,w,h)}
-else{c.fillStyle='#fff';c.fillRect(0,0,w,h)}
-}
+function drawScene(c,kind){if(kind==='transparent')return;c.fillStyle='#fff';c.fillRect(0,0,900,675)}
 function renderImage(){
-const out=document.createElement('canvas');out.width=900;out.height=675;const c=out.getContext('2d');drawScene(c,scene);
-const filters={'Realista':'none','Cartoon':'saturate(1.7) contrast(1.18)','Anime':'saturate(1.45) contrast(1.12)','3D':'saturate(1.3) contrast(1.25)','Aquarela':'saturate(.8) brightness(1.08)','Pixel art':'none'};
-c.filter=filters[activeStyle]||'none';
-if(activeStyle==='Pixel art'){c.drawImage(canvas,0,0);const small=document.createElement('canvas');small.width=45;small.height=34;const sc=small.getContext('2d');sc.drawImage(out,0,0,45,34);c.filter='none';c.imageSmoothingEnabled=false;c.clearRect(0,0,900,675);c.drawImage(small,0,0,900,675)}
-else c.drawImage(canvas,0,0);
-c.filter='none';return out.toDataURL('image/png')
+const out=document.createElement('canvas');out.width=900;out.height=675;const c=out.getContext('2d');
+const finish=()=>{const filters={'Realista':'none','Cartoon':'saturate(1.7) contrast(1.18)','Anime':'saturate(1.45) contrast(1.12)','3D':'saturate(1.3) contrast(1.25)','Aquarela':'saturate(.8) brightness(1.08)','Pixel art':'none'};c.filter=filters[activeStyle]||'none';c.drawImage(canvas,0,0,900,675);c.filter='none';if(activeStyle==='Pixel art'){const small=document.createElement('canvas');small.width=45;small.height=34;small.getContext('2d').drawImage(out,0,0,45,34);c.clearRect(0,0,900,675);c.imageSmoothingEnabled=false;c.drawImage(small,0,0,900,675)}lastCreated={image:out.toDataURL('image/png'),style:activeStyle,description:$('description').value.trim()||'Minha criação',idea:$('imageIdea').value.trim()};$('previewImage').src=lastCreated.image;$('previewLabel').textContent=lastCreated.description+' — '+activeStyle;$('preview').classList.add('show');$('preview').scrollIntoView({behavior:'smooth',block:'nearest'});toast('Imagem criada! Agora você pode editar.')};
+if(selectedPhoto){const img=new Image();img.crossOrigin='anonymous';img.onload=()=>{c.drawImage(img,0,0,900,675);finish()};img.onerror=()=>toast('Não foi possível carregar essa foto. Escolha outra.');img.src=selectedPhoto.url}
+else{drawScene(c,scene);finish()}
 }
-$('createImage').addEventListener('click',()=>{lastCreated={image:renderImage(),style:activeStyle,description:$('description').value.trim()||'Minha criação'};$('previewImage').src=lastCreated.image;$('previewLabel').textContent=lastCreated.description+' — '+activeStyle;$('preview').classList.add('show');$('preview').scrollIntoView({behavior:'smooth',block:'nearest'});toast('Imagem criada! Agora você pode editar.')});
+$('createImage').addEventListener('click',()=>{renderImage()});
+async function searchPhotoCatalog(query,statusId,resultsId){
+const status=$(statusId),container=$(resultsId);const q=query.trim();
+if(!q){status.textContent='Escreva o tipo de lugar que você quer.';return}
+status.textContent='Procurando fotografias...';container.replaceChildren();
+try{
+const url='https://commons.wikimedia.org/w/api.php?action=query&generator=search&gsrsearch='+encodeURIComponent(q+' filetype:bitmap')+'&gsrnamespace=6&gsrlimit=18&prop=imageinfo&iiprop=url&iiurlwidth=700&format=json&origin=*';
+const response=await fetch(url);if(!response.ok)throw new Error('Busca indisponível');
+const data=await response.json();const pages=Object.values(data.query?.pages||{}).filter(p=>p.imageinfo&&p.imageinfo[0]?.thumburl);
+photoResults=pages.map(p=>({title:p.title.replace(/^File:/,''),url:p.imageinfo[0].thumburl,source:p.imageinfo[0].descriptionurl}));
+if(!photoResults.length){status.textContent='Não encontrei fotos com essas palavras. Tente outra descrição.';return}
+status.textContent=photoResults.length+' fotografias encontradas. Toque na que você quer usar.';
+photoResults.forEach(photo=>{const card=document.createElement('button');card.type='button';card.className='photo-card'+(selectedPhoto?.url===photo.url?' is-selected':'');const img=document.createElement('img');img.loading='lazy';img.alt=photo.title;img.src=photo.url;const name=document.createElement('span');name.textContent=photo.title;card.append(img,name);card.addEventListener('click',()=>{selectedPhoto=photo;scene='photo';document.querySelectorAll('.photo-card').forEach(el=>el.classList.remove('is-selected'));card.classList.add('is-selected');toast('Foto escolhida como fundo')});container.append(card)});
+}catch(e){status.textContent='Não consegui buscar as fotos agora. Verifique a conexão e tente novamente.'}
+}
+$('searchPhotos').addEventListener('click',()=>searchPhotoCatalog($('backgroundQuery').value,'photoStatus','photoResults'));
+$('backgroundQuery').addEventListener('keydown',e=>{if(e.key==='Enter')searchPhotoCatalog($('backgroundQuery').value,'photoStatus','photoResults')});
+$('searchPhotosTab').addEventListener('click',()=>{const q=$('backgroundQueryTab').value;$('backgroundQuery').value=q;searchPhotoCatalog(q,'photoStatusTab','photoResultsTab')});
+$('backgroundQueryTab').addEventListener('keydown',e=>{if(e.key==='Enter')searchPhotoCatalog($('backgroundQueryTab').value,'photoStatusTab','photoResultsTab')});
 function updateImageWith(draw){if(!lastCreated)return;const image=new Image();image.onload=()=>{const out=document.createElement('canvas');out.width=900;out.height=675;const c=out.getContext('2d');c.drawImage(image,0,0,900,675);draw(c);lastCreated.image=out.toDataURL('image/png');$('previewImage').src=lastCreated.image;toast('Edição aplicada!')};image.src=lastCreated.image}
 $('addText').addEventListener('click',()=>{const text=$('overlayText').value.trim();if(!text){toast('Escreva um texto primeiro');return}updateImageWith(c=>{const pos=$('textPosition').value;c.font='bold 48px system-ui, sans-serif';c.textAlign='center';c.textBaseline='middle';const y=pos==='top'?75:pos==='bottom'?600:338;c.lineWidth=8;c.strokeStyle='#302744';c.strokeText(text,450,y,820);c.fillStyle=$('textColor').value;c.fillText(text,450,y,820)})});
 $('addEmoji').addEventListener('click',()=>{const emoji=$('overlayEmoji').value.trim();if(!emoji){toast('Digite um emoji primeiro');return}updateImageWith(c=>{const pos=$('textPosition').value;c.font='100px system-ui';c.textAlign='center';c.textBaseline='middle';c.fillText(emoji,450,pos==='top'?100:pos==='bottom'?575:338)})});
