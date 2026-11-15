@@ -117,7 +117,7 @@ function renderUniverses(){
 function enterUniverse(id){activeUniverseId=id;setActive();$('universeHome').classList.add('hidden');$('universeApp').classList.remove('hidden');renderList()}
 $('newUniverse').addEventListener('click',()=>{
  const number=universes.length+1;const name='Universo '+String(number).padStart(2,'0');
- const u={id:Date.now()+Math.floor(Math.random()*1000),name,planets:[]};universes.push(u);saveAll();renderUniverses();enterUniverse(u.id);
+ const u={id:Date.now()+Math.floor(Math.random()*1000),name,planets:[]};universes.push(u);saveAll();renderUniverses();
 });
 $('backUniverses').addEventListener('click',()=>{$('universeApp').classList.add('hidden');$('universeHome').classList.remove('hidden');renderUniverses()});
 function current(){return {id:Date.now(),name:$('planetName').value.trim()||'Planeta sem nome',color:$('planetColor').value,size:+$('planetSize').value,water:+$('water').value,terrain:$('terrain').value,atmosphere:$('atmosphere').value,ring:$('hasRing').checked}}
