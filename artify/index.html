@@ -51,6 +51,12 @@ textarea.field{min-height:78px;resize:vertical}
 .art img{width:100%;height:145px;object-fit:contain;background:#f4f1fb;display:block}
 .art div{padding:10px}.art small{display:block;color:var(--muted);margin:4px 0 8px}.art button{font-size:11px;padding:7px 9px;margin:2px;border:0;border-radius:8px;background:#eeeaff;color:#5b45a4;font-weight:700}
 .empty{text-align:center;color:var(--muted);padding:35px 10px}.empty b{display:block;color:var(--ink);margin:8px}
+ .scenes{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.scene{border:1px solid var(--line);background:#faf9ff;border-radius:12px;padding:9px;text-align:left;font-weight:750;color:#51496b}
+.scene.is-selected{border:2px solid var(--purple);background:#eee9ff;color:#5738c9;box-shadow:0 0 0 3px #7657ee18}
+.scene small{display:block;font-weight:500;color:var(--muted);margin-top:3px}
+.edit-tools{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
+.edit-tools .field{min-width:0}
 @media(max-width:740px){.layout{grid-template-columns:1fr}.app{padding-top:12px}.panel{padding:13px}.bottom{gap:2px}.navbtn{padding:8px 12px}}
 </style>
 </head>
@@ -83,32 +89,51 @@ textarea.field{min-height:78px;resize:vertical}
 <button type="button" class="style" data-style="Aquarela" aria-pressed="false"><span>🖌️</span>Aquarela<small>Pintura suave</small></button>
 <button type="button" class="style" data-style="Pixel art" aria-pressed="false"><span>👾</span>Pixel art<small>Blocos de pixels</small></button>
 </div>
-<label class="label" for="description">O que você desenhou? (opcional)</label><textarea id="description" class="field" placeholder="Ex.: Um fantasma sorridente..."></textarea>
+<label class="label">Escolha um cenário para o fundo</label>
+<div class="scenes" id="sceneChoices">
+<button type="button" class="scene is-selected" data-scene="white" aria-pressed="true">⬜ Branco<small>Fundo simples</small></button>
+<button type="button" class="scene" data-scene="sky" aria-pressed="false">☁️ Céu<small>Nuvens e céu azul</small></button>
+<button type="button" class="scene" data-scene="sunset" aria-pressed="false">🌅 Pôr do sol<small>Cores quentes</small></button>
+<button type="button" class="scene" data-scene="forest" aria-pressed="false">🌳 Floresta<small>Natureza verde</small></button>
+<button type="button" class="scene" data-scene="space" aria-pressed="false">🌌 Espaço<small>Estrelas e noite</small></button>
+<button type="button" class="scene" data-scene="beach" aria-pressed="false">🏖️ Praia<small>Mar e areia</small></button>
+</div>
+<label class="label" for="description">Nome da sua criação (opcional)</label><textarea id="description" class="field" placeholder="Ex.: Meu dragão colorido..."></textarea>
 <button type="button" class="primary full" id="createImage">✦ Criar imagem</button>
-<p class="note">Pixel Art converte seu desenho em pixels no próprio aparelho. Os outros estilos precisam de uma IA conectada, que ainda não está instalada.</p>
+<p class="note">Os estilos aplicam efeitos simples ao seu desenho no próprio aparelho. Não é uma geração por IA.</p>
 </aside>
 </div>
 <section class="panel preview" id="preview">
-<h2>Sua criação</h2><p class="sub" id="previewLabel"></p><img id="previewImage" alt="Prévia da sua criação">
-<div class="row"><button type="button" class="primary" id="save">Salvar imagem</button><button type="button" class="action" id="download">Baixar</button></div>
+<h2>Edite sua imagem</h2><p class="sub" id="previewLabel">Adicione uma frase ou um emoji, se quiser.</p><img id="previewImage" alt="Prévia da sua criação">
+<div class="edit-tools">
+<input id="overlayText" class="field" maxlength="50" placeholder="Escreva um texto...">
+<input id="overlayEmoji" class="field" maxlength="4" placeholder="Emoji (ex.: ⭐)">
+</div>
+<div class="row">
+<label for="textColor">Cor do texto</label><input id="textColor" class="color" type="color" value="#ffffff">
+<label for="textPosition">Posição</label><select id="textPosition" class="field" style="width:auto;flex:1"><option value="top">Em cima</option><option value="center">No meio</option><option value="bottom">Embaixo</option></select>
+</div>
+<div class="row"><button type="button" class="action" id="addText">Adicionar texto</button><button type="button" class="action" id="addEmoji">Adicionar emoji</button></div>
+<div class="row"><button type="button" class="primary" id="finish">Finalizar e salvar no app</button><button type="button" class="action" id="saveDevice">Salvar no celular</button></div>
+<p class="note">Ao finalizar, a imagem vai para Minhas fotos. Salvar no celular abre o compartilhamento ou baixa o arquivo para você guardar na galeria.</p>
 </section>
 </main>
 
-<main id="page-models" class="page hidden"><section class="panel"><h2>Modelos</h2><p class="sub">Escolha um estilo. Ele ficará selecionado quando voltar ao desenho.</p><div class="styles">
-<button type="button" class="style is-selected" data-model="Realista"><span>📷</span>Realista<small>Como uma foto</small></button>
-<button type="button" class="style" data-model="Cartoon"><span>🎨</span>Cartoon<small>Desenho colorido</small></button>
-<button type="button" class="style" data-model="Anime"><span>✨</span>Anime<small>Estilo animação</small></button>
-<button type="button" class="style" data-model="3D"><span>🧊</span>3D<small>Tridimensional</small></button>
-<button type="button" class="style" data-model="Aquarela"><span>🖌️</span>Aquarela<small>Pintura suave</small></button>
-<button type="button" class="style" data-model="Pixel art"><span>👾</span>Pixel art<small>Arte em pixels</small></button>
+<main id="page-photos" class="page hidden"><section class="panel"><h2>Fotos</h2><p class="sub">Escolha um cenário para usar como fundo da sua criação.</p><div class="scenes">
+<button type="button" class="scene is-selected" data-scene-page="white">⬜ Fundo branco<small>Simples e limpo</small></button>
+<button type="button" class="scene" data-scene-page="sky">☁️ Céu<small>Azul e nuvens</small></button>
+<button type="button" class="scene" data-scene-page="sunset">🌅 Pôr do sol<small>Céu colorido</small></button>
+<button type="button" class="scene" data-scene-page="forest">🌳 Floresta<small>Verde e natureza</small></button>
+<button type="button" class="scene" data-scene-page="space">🌌 Espaço<small>Estrelas</small></button>
+<button type="button" class="scene" data-scene-page="beach">🏖️ Praia<small>Mar e areia</small></button>
 </div></section></main>
 
-<main id="page-mine" class="page hidden"><section class="panel"><h2>Minhas imagens</h2><p class="sub">Imagens que você salvou nesta sessão.</p><div id="gallery" class="gallery"><div class="empty" style="grid-column:1/-1">🖼️<b>Suas imagens aparecerão aqui.</b>Faça um desenho e toque em Salvar imagem.</div></div></section></main>
+<main id="page-mine" class="page hidden"><section class="panel"><h2>Minhas fotos</h2><p class="sub">Imagens que você finalizou no Artify.</p><div id="gallery" class="gallery"><div class="empty" style="grid-column:1/-1">🖼️<b>Suas fotos aparecerão aqui.</b>Crie uma imagem e toque em Finalizar.</div></div></section></main>
 </div>
 <nav class="bottom" aria-label="Navegação principal">
 <button type="button" class="navbtn is-selected" data-page="create" aria-pressed="true">✏️ Criar</button>
-<button type="button" class="navbtn" data-page="models" aria-pressed="false">🎨 Modelos</button>
-<button type="button" class="navbtn" data-page="mine" aria-pressed="false">🖼️ Minhas imagens</button>
+<button type="button" class="navbtn" data-page="photos" aria-pressed="false">📷 Fotos</button>
+<button type="button" class="navbtn" data-page="mine" aria-pressed="false">🖼️ Minhas fotos</button>
 </nav>
 <div class="toast" id="toast" role="status"></div>
 <script>
@@ -116,38 +141,55 @@ textarea.field{min-height:78px;resize:vertical}
 'use strict';
 const $=id=>document.getElementById(id);
 const canvas=$('canvas'),ctx=canvas.getContext('2d');
-let activeTool='pen',activeStyle='Realista',color=$('color').value,brushSize=6,drawing=false,lastPoint=null,history=[],lastCreated=null,arts=[];
-let transparent=false;
-function toast(message){const box=$('toast');box.textContent=message;box.classList.add('show');clearTimeout(toast.timer);toast.timer=setTimeout(()=>box.classList.remove('show'),2200)}
+let activeTool='pen',activeStyle='Realista',color=$('color').value,brushSize=6,drawing=false,lastPoint=null,history=[],lastCreated=null,arts=[],scene='white';
+function toast(message){const box=$('toast');box.textContent=message;box.classList.add('show');clearTimeout(toast.timer);toast.timer=setTimeout(()=>box.classList.remove('show'),2300)}
 function setPressed(buttons,chosen){buttons.forEach(button=>{const selected=button===chosen;button.classList.toggle('is-selected',selected);button.setAttribute('aria-pressed',String(selected))})}
 function saveHistory(){try{history.push(ctx.getImageData(0,0,canvas.width,canvas.height));if(history.length>30)history.shift()}catch(e){}}
-function fillWhite(){ctx.save();ctx.globalCompositeOperation='source-over';ctx.fillStyle='#fff';ctx.fillRect(0,0,canvas.width,canvas.height);ctx.restore()}
-fillWhite();
+ctx.clearRect(0,0,canvas.width,canvas.height);
 const toolButtons=[...document.querySelectorAll('[data-tool]')];
 toolButtons.forEach(button=>button.addEventListener('click',()=>{activeTool=button.dataset.tool;setPressed(toolButtons,button);toast(activeTool==='pen'?'Lápis selecionado':'Borracha selecionada')}));
 $('color').addEventListener('input',e=>{color=e.target.value});
 $('size').addEventListener('input',e=>{brushSize=Number(e.target.value);$('sizeValue').textContent=String(brushSize)});
 function getPoint(event){const rect=canvas.getBoundingClientRect();return{x:(event.clientX-rect.left)*canvas.width/rect.width,y:(event.clientY-rect.top)*canvas.height/rect.height}}
-canvas.addEventListener('pointerdown',event=>{event.preventDefault();drawing=true;canvas.setPointerCapture(event.pointerId);saveHistory();lastPoint=getPoint(event);ctx.beginPath();ctx.moveTo(lastPoint.x,lastPoint.y);ctx.lineCap='round';ctx.lineJoin='round';ctx.lineWidth=activeTool==='eraser'?brushSize*4:brushSize;ctx.strokeStyle=activeTool==='eraser'?'#ffffff':color;ctx.lineTo(lastPoint.x+0.1,lastPoint.y+0.1);ctx.stroke()});
-canvas.addEventListener('pointermove',event=>{if(!drawing)return;event.preventDefault();const p=getPoint(event);ctx.beginPath();ctx.moveTo(lastPoint.x,lastPoint.y);ctx.lineTo(p.x,p.y);ctx.lineCap='round';ctx.lineJoin='round';ctx.lineWidth=activeTool==='eraser'?brushSize*4:brushSize;ctx.strokeStyle=activeTool==='eraser'?'#ffffff':color;ctx.stroke();lastPoint=p});
+canvas.addEventListener('pointerdown',event=>{event.preventDefault();drawing=true;canvas.setPointerCapture(event.pointerId);saveHistory();lastPoint=getPoint(event);ctx.beginPath();ctx.moveTo(lastPoint.x,lastPoint.y);ctx.lineCap='round';ctx.lineJoin='round';ctx.lineWidth=activeTool==='eraser'?brushSize*4:brushSize;ctx.strokeStyle=activeTool==='eraser'?'rgba(255,255,255,1)':color;ctx.globalCompositeOperation=activeTool==='eraser'?'destination-out':'source-over';ctx.lineTo(lastPoint.x+0.1,lastPoint.y+0.1);ctx.stroke();ctx.globalCompositeOperation='source-over'});
+canvas.addEventListener('pointermove',event=>{if(!drawing)return;event.preventDefault();const p=getPoint(event);ctx.beginPath();ctx.moveTo(lastPoint.x,lastPoint.y);ctx.lineTo(p.x,p.y);ctx.lineCap='round';ctx.lineJoin='round';ctx.lineWidth=activeTool==='eraser'?brushSize*4:brushSize;ctx.globalCompositeOperation=activeTool==='eraser'?'destination-out':'source-over';ctx.strokeStyle=color;ctx.stroke();ctx.globalCompositeOperation='source-over';lastPoint=p});
 function stopDrawing(){drawing=false;lastPoint=null}
 canvas.addEventListener('pointerup',stopDrawing);canvas.addEventListener('pointercancel',stopDrawing);canvas.addEventListener('lostpointercapture',stopDrawing);
 $('undo').addEventListener('click',()=>{const previous=history.pop();if(previous){ctx.putImageData(previous,0,0);toast('Último traço desfeito')}else toast('Nada para desfazer')});
-$('clear').addEventListener('click',()=>{saveHistory();ctx.clearRect(0,0,canvas.width,canvas.height);if(!transparent)fillWhite();toast('Desenho limpo')});
-$('whiteBg').addEventListener('click',()=>{transparent=false;const old=document.createElement('canvas');old.width=canvas.width;old.height=canvas.height;old.getContext('2d').drawImage(canvas,0,0);fillWhite();ctx.drawImage(old,0,0);toast('Fundo branco selecionado')});
-$('transparentBg').addEventListener('click',()=>{transparent=true;toast('Fundo transparente selecionado')});
-function chooseStyle(style){activeStyle=style;document.querySelectorAll('[data-style]').forEach(b=>{const on=b.dataset.style===style;b.classList.toggle('is-selected',on);b.setAttribute('aria-pressed',String(on))});document.querySelectorAll('[data-model]').forEach(b=>{const on=b.dataset.model===style;b.classList.toggle('is-selected',on);b.setAttribute('aria-pressed',String(on))});}
-document.querySelectorAll('[data-style]').forEach(b=>b.addEventListener('click',()=>{chooseStyle(b.dataset.style);toast(styleMessage())}));
-document.querySelectorAll('[data-model]').forEach(b=>b.addEventListener('click',()=>{chooseStyle(b.dataset.model);showPage('create');toast('Modelo '+activeStyle+' selecionado')}));
-function styleMessage(){return 'Modelo '+activeStyle+' selecionado'}
-function showPage(page){['create','models','mine'].forEach(name=>$('page-'+name).classList.toggle('hidden',name!==page));document.querySelectorAll('[data-page]').forEach(b=>{const on=b.dataset.page===page;b.classList.toggle('is-selected',on);b.setAttribute('aria-pressed',String(on))});window.scrollTo({top:0,behavior:'smooth'})}
+$('clear').addEventListener('click',()=>{saveHistory();ctx.clearRect(0,0,canvas.width,canvas.height);toast('Desenho limpo')});
+function selectScene(value){scene=value;document.querySelectorAll('[data-scene]').forEach(b=>{const on=b.dataset.scene===value;b.classList.toggle('is-selected',on);b.setAttribute('aria-pressed',String(on))});document.querySelectorAll('[data-scene-page]').forEach(b=>b.classList.toggle('is-selected',b.dataset.scenePage===value))}
+document.querySelectorAll('[data-scene]').forEach(b=>b.addEventListener('click',()=>{selectScene(b.dataset.scene);toast('Cenário selecionado')}));
+document.querySelectorAll('[data-scene-page]').forEach(b=>b.addEventListener('click',()=>{selectScene(b.dataset.scenePage);showPage('create');toast('Cenário selecionado')}));
+function chooseStyle(style){activeStyle=style;document.querySelectorAll('[data-style]').forEach(b=>{const on=b.dataset.style===style;b.classList.toggle('is-selected',on);b.setAttribute('aria-pressed',String(on))})}
+document.querySelectorAll('[data-style]').forEach(b=>b.addEventListener('click',()=>{chooseStyle(b.dataset.style);toast('Modelo '+activeStyle+' selecionado')}));
+function showPage(page){['create','photos','mine'].forEach(name=>$('page-'+name).classList.toggle('hidden',name!==page));document.querySelectorAll('[data-page]').forEach(b=>{const on=b.dataset.page===page;b.classList.toggle('is-selected',on);b.setAttribute('aria-pressed',String(on))});window.scrollTo({top:0,behavior:'smooth'})}
 document.querySelectorAll('[data-page]').forEach(b=>b.addEventListener('click',()=>showPage(b.dataset.page)));
-function pixelate(source){const tiny=document.createElement('canvas');tiny.width=45;tiny.height=34;const tctx=tiny.getContext('2d');tctx.fillStyle='#fff';tctx.fillRect(0,0,tiny.width,tiny.height);tctx.imageSmoothingEnabled=true;tctx.drawImage(source,0,0,tiny.width,tiny.height);const result=document.createElement('canvas');result.width=900;result.height=675;const rctx=result.getContext('2d');rctx.imageSmoothingEnabled=false;rctx.drawImage(tiny,0,0,result.width,result.height);return result.toDataURL('image/png')}
-$('createImage').addEventListener('click',()=>{if(activeStyle!=='Pixel art'){toast('Este estilo precisa de uma IA que ainda não está conectada. Pixel Art já funciona!');return}lastCreated={image:pixelate(canvas),style:activeStyle,description:$('description').value.trim()||'Meu desenho'};$('previewImage').src=lastCreated.image;$('previewLabel').textContent=lastCreated.description+' — Pixel Art';$('preview').classList.add('show');$('preview').scrollIntoView({behavior:'smooth',block:'nearest'});toast('Pixel Art criado!')});
-$('save').addEventListener('click',()=>{if(!lastCreated){toast('Crie uma imagem primeiro');return}arts.unshift({...lastCreated,id:Date.now()});renderGallery();toast('Imagem salva!')});
-function downloadImage(image,name){const link=document.createElement('a');link.href=image;link.download=name;document.body.appendChild(link);link.click();link.remove()}
-$('download').addEventListener('click',()=>{if(lastCreated)downloadImage(lastCreated.image,'minha-arte-artify.png');else toast('Crie uma imagem primeiro')});
-function renderGallery(){const gallery=$('gallery');gallery.replaceChildren();if(!arts.length){const empty=document.createElement('div');empty.className='empty';empty.style.gridColumn='1/-1';empty.innerHTML='🖼️<b>Suas imagens aparecerão aqui.</b>Faça um desenho e toque em Salvar imagem.';gallery.append(empty);return}arts.forEach(art=>{const card=document.createElement('article');card.className='art';const image=document.createElement('img');image.src=art.image;image.alt=art.description;const info=document.createElement('div');const title=document.createElement('strong');title.textContent=art.description;const small=document.createElement('small');small.textContent=art.style;const download=document.createElement('button');download.type='button';download.textContent='Baixar';download.addEventListener('click',()=>downloadImage(art.image,'artify-'+art.id+'.png'));info.append(title,small,download);card.append(image,info);gallery.append(card)})}
+function drawScene(c,kind){
+const w=900,h=675;
+if(kind==='transparent')return;
+if(kind==='sky'){const g=c.createLinearGradient(0,0,0,h);g.addColorStop(0,'#65c7ff');g.addColorStop(1,'#e8f8ff');c.fillStyle=g;c.fillRect(0,0,w,h);c.fillStyle='#fff';[[150,130,55],[220,125,70],[600,180,65],[670,175,80],[420,85,40]].forEach(([x,y,r])=>{c.beginPath();c.arc(x,y,r,0,Math.PI*2);c.fill()});}
+else if(kind==='sunset'){const g=c.createLinearGradient(0,0,0,h);g.addColorStop(0,'#593d91');g.addColorStop(.5,'#f58c91');g.addColorStop(1,'#ffd28a');c.fillStyle=g;c.fillRect(0,0,w,h);c.fillStyle='#ffe8a6';c.beginPath();c.arc(450,390,95,0,Math.PI*2);c.fill();c.fillStyle='#7c5a83';c.fillRect(0,530,w,145)}
+else if(kind==='forest'){const g=c.createLinearGradient(0,0,0,h);g.addColorStop(0,'#b8e6bd');g.addColorStop(1,'#28734b');c.fillStyle=g;c.fillRect(0,0,w,h);c.fillStyle='#205a3b';for(let x=40;x<920;x+=130){c.fillRect(x,300,28,375);c.beginPath();c.moveTo(x-65,350);c.lineTo(x+14,120);c.lineTo(x+95,350);c.fill()}}
+else if(kind==='space'){c.fillStyle='#11132f';c.fillRect(0,0,w,h);c.fillStyle='#fff';for(let i=0;i<100;i++){const x=(i*137)%900,y=(i*83)%675;c.beginPath();c.arc(x,y,(i%3)+1,0,Math.PI*2);c.fill()}c.fillStyle='#7657ee';c.beginPath();c.arc(680,180,95,0,Math.PI*2);c.fill();c.fillStyle='#f0a5e2';c.beginPath();c.arc(650,155,80,0,Math.PI*2);c.fill()}
+else if(kind==='beach'){const g=c.createLinearGradient(0,0,0,675);g.addColorStop(0,'#8edcff');g.addColorStop(.58,'#c4f1ff');g.addColorStop(.59,'#31a9d6');g.addColorStop(.82,'#1685bd');g.addColorStop(.83,'#f6d89c');g.addColorStop(1,'#eecb83');c.fillStyle=g;c.fillRect(0,0,w,h)}
+else{c.fillStyle='#fff';c.fillRect(0,0,w,h)}
+}
+function renderImage(){
+const out=document.createElement('canvas');out.width=900;out.height=675;const c=out.getContext('2d');drawScene(c,scene);
+const filters={'Realista':'none','Cartoon':'saturate(1.7) contrast(1.18)','Anime':'saturate(1.45) contrast(1.12)','3D':'saturate(1.3) contrast(1.25)','Aquarela':'saturate(.8) brightness(1.08)','Pixel art':'none'};
+c.filter=filters[activeStyle]||'none';
+if(activeStyle==='Pixel art'){c.drawImage(canvas,0,0);const small=document.createElement('canvas');small.width=45;small.height=34;const sc=small.getContext('2d');sc.drawImage(out,0,0,45,34);c.filter='none';c.imageSmoothingEnabled=false;c.clearRect(0,0,900,675);c.drawImage(small,0,0,900,675)}
+else c.drawImage(canvas,0,0);
+c.filter='none';return out.toDataURL('image/png')
+}
+$('createImage').addEventListener('click',()=>{lastCreated={image:renderImage(),style:activeStyle,description:$('description').value.trim()||'Minha criação'};$('previewImage').src=lastCreated.image;$('previewLabel').textContent=lastCreated.description+' — '+activeStyle;$('preview').classList.add('show');$('preview').scrollIntoView({behavior:'smooth',block:'nearest'});toast('Imagem criada! Agora você pode editar.')});
+function updateImageWith(draw){if(!lastCreated)return;const image=new Image();image.onload=()=>{const out=document.createElement('canvas');out.width=900;out.height=675;const c=out.getContext('2d');c.drawImage(image,0,0,900,675);draw(c);lastCreated.image=out.toDataURL('image/png');$('previewImage').src=lastCreated.image;toast('Edição aplicada!')};image.src=lastCreated.image}
+$('addText').addEventListener('click',()=>{const text=$('overlayText').value.trim();if(!text){toast('Escreva um texto primeiro');return}updateImageWith(c=>{const pos=$('textPosition').value;c.font='bold 48px system-ui, sans-serif';c.textAlign='center';c.textBaseline='middle';const y=pos==='top'?75:pos==='bottom'?600:338;c.lineWidth=8;c.strokeStyle='#302744';c.strokeText(text,450,y,820);c.fillStyle=$('textColor').value;c.fillText(text,450,y,820)})});
+$('addEmoji').addEventListener('click',()=>{const emoji=$('overlayEmoji').value.trim();if(!emoji){toast('Digite um emoji primeiro');return}updateImageWith(c=>{const pos=$('textPosition').value;c.font='100px system-ui';c.textAlign='center';c.textBaseline='middle';c.fillText(emoji,450,pos==='top'?100:pos==='bottom'?575:338)})});
+$('finish').addEventListener('click',()=>{if(!lastCreated)return;arts.unshift({...lastCreated,id:Date.now()});renderGallery();showPage('mine');$('preview').classList.remove('show');toast('Finalizado! Está em Minhas fotos.')});
+function downloadImage(data,name){const link=document.createElement('a');link.href=data;link.download=name;document.body.appendChild(link);link.click();link.remove()}
+$('saveDevice').addEventListener('click',async()=>{if(!lastCreated)return;try{const response=await fetch(lastCreated.image);const blob=await response.blob();const file=new File([blob],'minha-arte-artify.png',{type:'image/png'});if(navigator.share&&navigator.canShare&&navigator.canShare({files:[file]})){await navigator.share({files:[file],title:'Minha imagem do Artify'});toast('Compartilhamento aberto!')}else{downloadImage(lastCreated.image,'minha-arte-artify.png');toast('Imagem baixada. Abra o arquivo para salvar na galeria.')}}catch(e){downloadImage(lastCreated.image,'minha-arte-artify.png');toast('Imagem baixada para o aparelho.')}});
+function renderGallery(){const gallery=$('gallery');gallery.replaceChildren();if(!arts.length){const empty=document.createElement('div');empty.className='empty';empty.style.gridColumn='1/-1';empty.innerHTML='🖼️<b>Suas fotos aparecerão aqui.</b>Crie uma imagem e toque em Finalizar.';gallery.append(empty);return}arts.forEach(art=>{const card=document.createElement('article');card.className='art';const image=document.createElement('img');image.src=art.image;image.alt=art.description;const info=document.createElement('div');const title=document.createElement('strong');title.textContent=art.description;const small=document.createElement('small');small.textContent=art.style;const download=document.createElement('button');download.type='button';download.textContent='Baixar';download.addEventListener('click',()=>downloadImage(art.image,'artify-'+art.id+'.png'));info.append(title,small,download);card.append(image,info);gallery.append(card)})}
 })();
 </script>
 </body>
