@@ -21,7 +21,7 @@
 <label class="sizebox">Tamanho <input id="size" type="range" min="1" max="32" value="5"></label>
 </div>
 <div class="canvasShell"><div class="canvasArea"><canvas id="art" width="1000" height="700"></canvas></div>
-<div class="under"><div><button class="secondary" id="undo">↶ Desfazer</button> <button class="secondary" id="clear">Limpar</button></div><div><button class="primary" id="save">Salvar arte ↓</button></div></div></div>
+<div class="under"><div><button class="secondary" id="undo">↶ Desfazer</button> <button class="secondary" id="removeTemplate">🖼️ Tirar linhas cinzas</button> <button class="secondary" id="clear">Limpar</button></div><div><button class="primary" id="save">Salvar arte ↓</button></div></div></div>
 <p class="hint">Dica: escolha uma cor e toque em uma parte fechada do molde com “Pintar área”. Use dois dedos para ampliar a página pelo navegador, se necessário.</p>
 </section>
 <section id="images" class="panel">
@@ -59,11 +59,37 @@ const templates=[
 {name:'Dragão',cat:'Fantasia',svg:'<path d="M22 60 Q10 35 34 30 L29 14 L48 28 Q66 18 77 38 L91 31 L83 53 Q88 76 62 82 L50 94 L43 78 Q22 79 22 60Z"/><path d="M34 39 L10 22 L20 50 M66 35 L82 16 L78 45 M45 52 L50 56 L55 52"/>'},
 {name:'Sorvete',cat:'Comidas',svg:'<path d="M25 48 Q17 25 38 22 Q50 3 65 23 Q87 24 75 49 Q65 60 50 58 Q35 60 25 48Z"/><path d="M29 55 L50 94 L71 55"/>'},
 {name:'Morango',cat:'Comidas',svg:'<path d="M50 30 Q20 15 15 43 Q12 69 50 92 Q88 69 85 43 Q80 15 50 30Z"/><path d="M50 30 Q37 10 25 18 Q38 34 50 30 Q62 10 75 18 Q62 34 50 30Z"/><path d="M35 48 L35 50 M53 45 L53 47 M68 57 L68 59 M43 70 L43 72 M58 77 L58 79"/>'}
+,
+{name:'Leão',cat:'Animais',svg:'<circle cx="50" cy="50" r="38"/><circle cx="50" cy="50" r="27"/><path d="M37 45 Q42 40 46 45 M54 45 Q58 40 63 45 M44 59 Q50 65 56 59 M50 52 L47 56 L53 56Z"/>'},
+{name:'Coruja',cat:'Animais',svg:'<path d="M20 35 L15 10 L39 25 Q50 20 61 25 L85 10 L80 35 Q92 62 75 82 Q50 100 25 82 Q8 62 20 35Z"/><circle cx="38" cy="48" r="10"/><circle cx="62" cy="48" r="10"/><path d="M46 62 L50 70 L54 62 M35 82 L30 92 M65 82 L70 92"/>'},
+{name:'Baleia',cat:'Animais',svg:'<path d="M10 55 Q22 25 62 35 Q78 38 85 55 L96 43 L94 67 L82 62 Q68 84 42 82 Q17 80 10 55Z"/><circle cx="68" cy="49" r="3"/><path d="M48 35 Q42 24 50 18 M55 35 Q58 23 66 22"/>'},
+{name:'Abelha',cat:'Animais',svg:'<ellipse cx="50" cy="55" rx="30" ry="22"/><path d="M38 35 L38 75 M52 33 L52 77 M66 38 L66 72 M35 35 Q20 8 10 27 Q12 45 35 45 M65 35 Q80 8 90 27 Q88 45 65 45"/><circle cx="75" cy="51" r="2"/>'},
+{name:'Cogumelo',cat:'Natureza',svg:'<path d="M12 48 Q15 12 50 10 Q85 12 88 48Z"/><path d="M38 48 L34 88 Q50 96 66 88 L62 48Z"/><circle cx="32" cy="34" r="4"/><circle cx="55" cy="24" r="5"/><circle cx="72" cy="38" r="4"/>'},
+{name:'Nuvem',cat:'Natureza',svg:'<path d="M22 72 Q7 70 9 53 Q11 39 27 39 Q30 15 52 18 Q72 18 75 40 Q93 39 92 58 Q91 74 75 74Z"/>'},
+{name:'Lua e estrelas',cat:'Natureza',svg:'<path d="M65 12 Q38 24 43 51 Q49 79 78 76 Q59 98 34 83 Q8 66 20 39 Q33 12 65 12Z"/><path d="M77 15 L81 27 L94 28 L84 36 L87 49 L77 42 L66 49 L70 36 L60 28 L73 27Z M25 72 L28 80 L36 81 L30 86 L32 94 L25 89 L18 94 L20 86 L14 81 L22 80Z"/>'},
+{name:'Barquinho',cat:'Objetos',svg:'<path d="M12 65 H88 L72 87 H30Z M50 15 V64 M50 18 L20 55 H50Z M54 25 L82 55 H54Z"/>'},
+{name:'Avião',cat:'Objetos',svg:'<path d="M48 8 Q55 8 57 25 L62 48 L91 62 L91 72 L61 64 L58 86 L70 94 L70 98 L50 91 L30 98 L30 94 L42 86 L39 64 L9 72 L9 62 L38 48 L43 25 Q45 8 48 8Z"/>'},
+{name:'Pizza',cat:'Comidas',svg:'<path d="M15 25 Q50 5 85 25 L50 92Z"/><path d="M15 25 Q50 42 85 25"/><circle cx="43" cy="43" r="5"/><circle cx="62" cy="37" r="5"/><circle cx="50" cy="65" r="5"/>'},
+{name:'Cupcake',cat:'Comidas',svg:'<path d="M25 50 Q14 35 28 29 Q31 8 50 22 Q67 7 73 29 Q90 39 75 50Z"/><path d="M25 52 L34 91 H66 L75 52Z"/><path d="M37 64 L40 82 M50 62 L50 84 M63 64 L60 82"/>'},
+{name:'Coroa',cat:'Fantasia',svg:'<path d="M12 35 L31 52 L50 15 L69 52 L88 35 L80 82 H20Z"/><circle cx="12" cy="30" r="5"/><circle cx="50" cy="10" r="5"/><circle cx="88" cy="30" r="5"/><path d="M20 90 H80"/>'}
 ];
 function svgFor(t){return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><g fill="white" stroke="#92929a" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">'+t.svg+'</g></svg>'}
 function showToast(s){let el=$('#toast');el.textContent=s;el.classList.add('show');setTimeout(()=>el.classList.remove('show'),1900)}
 function snapshot(){history.push(ctx.getImageData(0,0,canvas.width,canvas.height));if(history.length>20)history.shift()}
 function clearCanvas(){ctx.fillStyle='#ffffff';ctx.fillRect(0,0,canvas.width,canvas.height)}
+function removeGrayTemplate(){
+  snapshot();
+  const img=ctx.getImageData(0,0,canvas.width,canvas.height),d=img.data;
+  for(let i=0;i<d.length;i+=4){
+    const r=d[i],g=d[i+1],b=d[i+2];
+    if(r>=90&&r<=190&&Math.abs(r-g)<=18&&Math.abs(g-b)<=18){
+      d[i]=255;d[i+1]=255;d[i+2]=255;d[i+3]=255;
+    }
+  }
+  ctx.putImageData(img,0,0);
+  showToast('Linhas cinzas removidas! Seu desenho ficou.');
+}
+$('#removeTemplate').onclick=removeGrayTemplate;
 clearCanvas();snapshot();
 function loadTemplate(t){snapshot();clearCanvas();let img=new Image(),url=URL.createObjectURL(new Blob([svgFor(t)],{type:'image/svg+xml'}));img.onload=()=>{const side=620;ctx.drawImage(img,(canvas.width-side)/2,(canvas.height-side)/2,side,side);URL.revokeObjectURL(url);showToast(t.name+' pronto para colorir!');switchTab('draw')};img.src=url}
 function switchTab(id){document.querySelectorAll('.panel').forEach(p=>p.classList.toggle('active',p.id===id));document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active',b.dataset.tab===id));if(id==='saved')renderSaved()}
