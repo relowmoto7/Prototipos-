@@ -15,13 +15,21 @@ h2{margin:8px 0 6px;font-size:25px}.muted{color:var(--muted);line-height:1.5}.st
 button.answer,.primary{border:0;border-radius:12px;padding:13px 16px;background:var(--blue);color:#08132b;font-weight:750;cursor:pointer}.answer{display:block;width:100%;text-align:left;margin:9px 0;background:#24365f!important;color:var(--text)!important;border:1px solid #40598b!important}.answer:disabled{opacity:.8;cursor:default}.primary:disabled{opacity:.5;cursor:default}
 .feedback{padding:13px;border-radius:12px;margin-top:12px;background:#203b3b;color:#baf4d9;line-height:1.5}.feedback.bad{background:#493328;color:#ffe0a9}.progress{height:9px;background:#26365f;border-radius:20px;overflow:hidden;margin:14px 0}.progress span{display:block;height:100%;background:var(--green);width:0;transition:.2s}
 footer{text-align:center;color:#94a4ca;font-size:12px;padding:18px;line-height:1.5}@media(min-width:700px){.panel{padding:26px}}
+
+.courseTabs{display:flex;gap:8px;overflow-x:auto;padding:8px 0 12px;margin:0 0 12px}
+.courseTab{white-space:nowrap;border:1px solid #49608f;background:#1c2a50;color:#eaf0ff;border-radius:12px;padding:9px 12px;cursor:pointer}
+.courseTab.active{background:#72a7ff;color:#08132b;border-color:#72a7ff;font-weight:800}
+.lessonNav{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}
+.lessonDot{border:1px solid #49608f;background:#182747;color:#dce7ff;border-radius:9px;padding:7px 9px}
+.lessonDot.done{background:#21483f;border-color:#438d76}
+.lessonDot.current{outline:2px solid #72a7ff}
 </style></head>
 <body>
 <header><div class="mark">🧭</div><h1>Profissão na Prática</h1><p>Aprenda como diferentes profissões funcionam e pratique com situações e desafios!</p></header>
 <main>
 <div class="topline"><span class="pill">🎓 Aprenda • Pratique • Descubra</span><span class="pill" id="scorePill">⭐ Pontos: 0</span></div>
 <section id="home"><h2>Escolha uma área</h2><p class="muted">Na seção Automóvel você encontra as aulas de motorista de carro e motociclista. As outras profissões ficam logo abaixo.</p><div class="grid" id="jobs"></div></section>
-<section id="course" class="panel hidden"><button class="back" id="back">← Voltar às profissões</button><div id="courseContent"></div></section>
+<section id="course" class="panel hidden"><button class="back" id="back">← Aprender profissões</button><div id="courseTabs" class="courseTabs"></div><div id="courseContent"></div></section>
 </main>
 <footer>Este aplicativo é educativo e usa situações fictícias. Não substitui cursos, formação, habilitação, supervisão profissional ou treinamento oficial. Carro e moto: conteúdo apenas teórico; nunca pratique direção sem formação, habilitação e supervisão adequadas.</footer>
 <script>
@@ -96,18 +104,107 @@ const professions=[
 ["Um paciente pergunta sobre um procedimento que você não realiza.",["Inventar uma resposta","Explicar os limites e encaminhar a um profissional adequado","Prometer resultado"],1,"É importante respeitar a própria área de atuação."]
 ]}
 ];
-let points=0,current=null,qIndex=0,correctCount=0;
-const jobs=document.getElementById('jobs'),home=document.getElementById('home'),course=document.getElementById('course'),content=document.getElementById('courseContent');
+
+let points=0,current=null,courseStates={},activeKey=null,view="home";
+const jobs=document.getElementById('jobs'),home=document.getElementById('home'),course=document.getElementById('course'),content=document.getElementById('courseContent'),tabs=document.getElementById('courseTabs');
+const stages=[
+["Conhecendo a profissão","Entenda qual é a missão principal desse trabalho e quem recebe o benefício do serviço."],
+["Responsabilidades","Conheça as responsabilidades do dia a dia e por que cada tarefa precisa ser feita com atenção."],
+["Organização","Aprenda a organizar materiais, informações e tarefas antes de começar."],
+["Ferramentas e recursos","Identifique os recursos usados na profissão e a importância de seguir orientações adequadas."],
+["Comunicação","Pratique como ouvir, explicar e confirmar informações com clareza e respeito."],
+["Atendimento e respeito","Entenda como tratar cada pessoa com educação, paciência e profissionalismo."],
+["Segurança","Reconheça riscos e saiba quando parar e pedir ajuda a alguém qualificado."],
+["Qualidade","Aprenda a conferir o trabalho e corrigir falhas sem esconder problemas."],
+["Trabalho em equipe","Veja como compartilhar informações e colaborar com colegas."],
+["Privacidade e confiança","Entenda quais informações devem ser protegidas e como conquistar confiança."],
+["Resolver imprevistos","Pratique como manter a calma, entender o problema e escolher um caminho responsável."],
+["Tomar decisões","Compare opções e pense nas consequências antes de agir."],
+["Regras e procedimentos","Entenda por que seguir normas, instruções e limites profissionais é essencial."],
+["Situações mais difíceis","Aplique o que aprendeu em situações que têm mais de um detalhe para observar."],
+["Identificar erros","Aprenda a perceber erros, comunicar o que aconteceu e buscar uma correção segura."],
+["Prioridades","Descubra como decidir o que precisa de atenção primeiro sem descuidar da segurança."],
+["Caso prático I","Analise uma situação completa ligada à rotina dessa profissão."],
+["Caso prático II","Resolva um desafio com informações importantes e possíveis consequências."],
+["Preparação para a prova","Revise os conhecimentos principais e pense como combinar tudo na prática."],
+["Revisão geral","Faça uma última revisão antes da prova final."]
+];
+const levels=["Iniciante","Iniciante","Iniciante","Básico","Básico","Básico","Intermediário","Intermediário","Intermediário","Intermediário","Avançado","Avançado","Avançado","Avançado","Avançado","Desafio","Desafio","Desafio","Revisão","Revisão"];
+function keyFor(p){return p.n}
 function renderJobs(){
- const auto=document.createElement('div');auto.className='job';auto.tabIndex=0;auto.setAttribute('role','button');auto.innerHTML='<span class="emoji">🚘</span><strong>Automóvel</strong><small>Motorista de carro e motociclista • aulas teóricas</small>';auto.onclick=()=>showAuto();auto.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();showAuto()}};jobs.appendChild(auto);
+ const auto=document.createElement('button');auto.className='job';auto.innerHTML='<span class="emoji">🚘</span><strong>Automóvel</strong><small>Motorista de carro e motociclista • aulas teóricas</small>';auto.onclick=showAuto;jobs.appendChild(auto);
  professions.slice(2).forEach(p=>{const b=document.createElement('button');b.className='job';b.innerHTML='<span class="emoji">'+p.e+'</span><strong>'+p.n+'</strong><small>'+p.d+'</small>';b.onclick=()=>openCourse(p);jobs.appendChild(b)});
 }
-function showAuto(){home.classList.add('hidden');course.classList.remove('hidden');content.innerHTML='<h2>🚘 Automóvel</h2><p class="muted">Escolha qual conteúdo teórico deseja estudar.</p><div class="grid"><button class="job" id="car"><span class="emoji">🚗</span><strong>Motorista de carro</strong><small>Regras e segurança no trânsito</small></button><button class="job" id="moto"><span class="emoji">🏍️</span><strong>Motociclista</strong><small>Equipamentos e convivência</small></button></div>';document.getElementById('car').onclick=()=>openCourse(professions[0]);document.getElementById('moto').onclick=()=>openCourse(professions[1]);window.scrollTo({top:0,behavior:'smooth'})}
-function openCourse(p){current=p;qIndex=0;correctCount=0;home.classList.add('hidden');course.classList.remove('hidden');showLesson();window.scrollTo({top:0,behavior:'smooth'})}
-function showLesson(){content.innerHTML='<div class="step">AULA • '+current.n+'</div><h2>'+current.e+' '+current.n+'</h2><p class="muted">'+current.d+'</p><div class="lesson"><strong>O que você vai aprender:</strong><ul>'+current.learn.map(x=>'<li>'+x+'</li>').join('')+'</ul></div><p class="muted">Depois da aula, você responderá '+current.questions.length+' perguntas. Cada acerto vale 10 pontos.</p><div class="actions"><button class="primary" id="start">Começar os desafios →</button></div>';document.getElementById('start').onclick=showQuestion}
-function showQuestion(){const q=current.questions[qIndex];content.innerHTML='<div class="step">PERGUNTA '+(qIndex+1)+' DE '+current.questions.length+'</div><h2>Hora de praticar!</h2><div class="progress"><span style="width:'+((qIndex)/current.questions.length*100)+'%"></span></div><p class="muted">Leia com atenção e escolha uma resposta.</p><div class="lesson"><strong>'+q[0]+'</strong></div><div id="answers">'+q[1].map((a,i)=>'<button class="answer" data-a="'+i+'">'+String.fromCharCode(65+i)+'. '+a+'</button>').join('')+'</div><div id="feedback" aria-live="polite"></div><div class="actions"><button class="primary hidden" id="next"></button></div>';document.querySelectorAll('.answer').forEach(b=>b.onclick=()=>answer(Number(b.dataset.a)));window.scrollTo({top:0,behavior:'smooth'})}
-function answer(i){const q=current.questions[qIndex];document.querySelectorAll('.answer').forEach(b=>b.disabled=true);const good=i===q[2];if(good){points+=10;correctCount++;document.getElementById('scorePill').textContent='⭐ Pontos: '+points}const f=document.getElementById('feedback');f.className='feedback'+(good?'':' bad');f.textContent=(good?'🎉 Muito bem! +10 pontos. ':'💡 Não foi dessa vez. ')+q[3];const next=document.getElementById('next');next.classList.remove('hidden');next.textContent=qIndex+1<current.questions.length?'Próxima pergunta →':'Ver resultado';next.onclick=()=>{qIndex++;if(qIndex<current.questions.length)showQuestion();else showResult()}}
-function showResult(){const total=current.questions.length;content.innerHTML='<div class="step">FIM DA ATIVIDADE</div><h2>🏆 Você terminou!</h2><div class="lesson"><strong>'+current.n+'</strong><p>Você acertou '+correctCount+' de '+total+' perguntas.</p><p>Ganhou <strong>'+(correctCount*10)+' pontos</strong> nesta atividade.</p><p>'+(correctCount===total?'Excelente! Você acertou todas!':correctCount>=Math.ceil(total/2)?'Muito bom! Continue estudando para aprender ainda mais.':'Boa tentativa! Vale reler a aula e tentar novamente.')+'</p></div><div class="actions"><button class="primary" id="retry">Refazer esta atividade</button><button class="back" id="homeBtn">Voltar às profissões</button></div>';document.getElementById('retry').onclick=()=>openCourse(current);document.getElementById('homeBtn').onclick=goHome}
-function goHome(){course.classList.add('hidden');home.classList.remove('hidden');window.scrollTo({top:0,behavior:'smooth'})}
-document.getElementById('back').onclick=goHome;renderJobs();
+function showAuto(){view="auto";home.classList.add('hidden');course.classList.remove('hidden');tabs.innerHTML="";content.innerHTML='<h2>🚘 Automóvel</h2><p class="muted">Escolha uma trilha teórica para abrir sua aba de estudos.</p><div class="grid"><button class="job" id="car"><span class="emoji">🚗</span><strong>Motorista de carro</strong><small>Regras e segurança no trânsito</small></button><button class="job" id="moto"><span class="emoji">🏍️</span><strong>Motociclista</strong><small>Equipamentos e convivência</small></button></div>';document.getElementById('car').onclick=()=>openCourse(professions[0]);document.getElementById('moto').onclick=()=>openCourse(professions[1]);window.scrollTo({top:0,behavior:'smooth'})}
+function buildLessons(p){
+ return stages.map((s,i)=>{
+  const source=p.learn[i%p.learn.length];
+  const extra=[
+   "Pense no objetivo da tarefa e em quem pode ser afetado pelo resultado.",
+   "Antes de agir, confirme as informações e siga os procedimentos do local de trabalho.",
+   "Se surgir uma dúvida que ultrapassa sua formação, pare e peça orientação a uma pessoa qualificada.",
+   "No final, confira se o resultado está correto e se todas as pessoas foram tratadas com respeito."
+  ][i%4];
+  return {title:s[0],level:levels[i],text:source+" "+s[1]+" "+extra};
+ });
+}
+function buildQuestion(p,i){
+ const base=p.questions[i%p.questions.length];
+ const frames=[
+ "Você está começando sua rotina de trabalho. "+base[0],
+ "Um detalhe inesperado aparece durante o atendimento. "+base[0],
+ "Imagine que você precisa explicar sua decisão a um colega. "+base[0],
+ "Em uma situação mais complexa, "+base[0].charAt(0).toLowerCase()+base[0].slice(1)
+ ];
+ return {q:frames[i%frames.length],a:base[1],ok:base[2],why:base[3]};
+}
+function openCourse(p){
+ const k=keyFor(p);if(!courseStates[k])courseStates[k]={p,index:0,mode:"lesson",answered:false,score:0,examIndex:0,examScore:0,examAnswers:[]};
+ activeKey=k;view="course";home.classList.add('hidden');course.classList.remove('hidden');renderTabs();renderCourse();window.scrollTo({top:0,behavior:'smooth'});
+}
+function renderTabs(){
+ tabs.innerHTML="";
+ Object.keys(courseStates).forEach(k=>{
+  const b=document.createElement('button');b.className='courseTab'+(k===activeKey?' active':'');b.textContent=courseStates[k].p.e+" "+k;b.onclick=()=>{activeKey=k;view="course";renderTabs();renderCourse()};tabs.appendChild(b);
+ });
+}
+function speak(textToRead){
+ if(!('speechSynthesis' in window)){alert('Este navegador não oferece leitura em voz alta.');return}
+ speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(textToRead);u.lang='pt-BR';u.rate=0.95;speechSynthesis.speak(u);
+}
+function stopSpeak(){if('speechSynthesis' in window)speechSynthesis.cancel()}
+function renderCourse(){
+ const st=courseStates[activeKey],p=st.p;
+ if(st.mode==="lesson")renderLesson();
+ else if(st.mode==="question")renderQuestion();
+ else if(st.mode==="exam")renderExam();
+ else if(st.mode==="result")renderResult();
+}
+function renderLesson(){
+ const st=courseStates[activeKey],p=st.p,i=st.index,L=buildLessons(p)[i];
+ content.innerHTML='<div class="step">AULA '+(i+1)+' DE 20 • '+L.level+'</div><h2>'+p.e+' '+p.n+'</h2><h3>'+L.title+'</h3><div class="progress"><span style="width:'+(i/20*100)+'%"></span></div><div class="lesson" id="readLesson">'+L.text+'</div><div class="actions"><button class="primary" id="listen">🔊 Ouvir esta aula</button><button class="back" id="stopAudio">■ Parar áudio</button></div><p class="muted">Leia ou escute a explicação. Depois, responda à pergunta para avançar. As aulas começam simples e ficam mais desafiadoras.</p><div class="actions"><button class="primary" id="toQuestion">Entendi! Fazer pergunta →</button></div><div class="lessonNav">'+stages.map((x,j)=>'<span class="lessonDot '+(j<i?'done':j===i?'current':'')+'">'+(j+1)+'</span>').join('')+'</div>';
+ document.getElementById('listen').onclick=()=>speak(p.n+". Aula "+(i+1)+". "+L.title+". "+L.text);
+ document.getElementById('stopAudio').onclick=stopSpeak;
+ document.getElementById('toQuestion').onclick=()=>{stopSpeak();st.mode="question";st.answered=false;renderQuestion()};
+}
+function renderQuestion(){
+ const st=courseStates[activeKey],p=st.p,i=st.index,q=buildQuestion(p,i);
+ content.innerHTML='<div class="step">PERGUNTA '+(i+1)+' DE 20 • '+levels[i]+'</div><h2>🧠 Vamos praticar</h2><div class="lesson"><strong>'+q.q+'</strong></div><div id="answers">'+q.a.map((a,j)=>'<button class="answer" data-a="'+j+'">'+String.fromCharCode(65+j)+'. '+a+'</button>').join('')+'</div><div id="feedback" aria-live="polite"></div><div class="actions"><button class="primary hidden" id="next"></button></div>';
+ document.querySelectorAll('.answer').forEach(b=>b.onclick=()=>{if(st.answered)return;st.answered=true;const good=Number(b.dataset.a)===q.ok;document.querySelectorAll('.answer').forEach(x=>x.disabled=true);if(good){points+=10;st.score+=10;document.getElementById('scorePill').textContent='⭐ Pontos: '+points}const f=document.getElementById('feedback');f.className='feedback'+(good?'':' bad');f.textContent=(good?'🎉 Resposta correta! +10 pontos. ':'💡 Vamos aprender com o erro. ')+q.why;const n=document.getElementById('next');n.classList.remove('hidden');n.textContent=i===19?'Começar a prova final →':'Próxima aula →';n.onclick=()=>{if(i===19){st.mode='exam';st.examIndex=0;st.examScore=0;st.examAnswers=[];renderExam()}else{st.index++;st.mode='lesson';renderLesson()}}});
+}
+function renderExam(){
+ const st=courseStates[activeKey],p=st.p,i=st.examIndex,q=buildQuestion(p,i);
+ content.innerHTML='<div class="step">PROVA FINAL • QUESTÃO '+(i+1)+' DE 20</div><h2>📝 Prova final: '+p.n+'</h2><p class="muted">Agora é a revisão completa! Responda às 20 questões. Você verá seu resultado ao terminar.</p><div class="progress"><span style="width:'+(i/20*100)+'%"></span></div><div class="lesson"><strong>'+q.q+'</strong></div><div id="examAnswers">'+q.a.map((a,j)=>'<button class="answer" data-a="'+j+'">'+String.fromCharCode(65+j)+'. '+a+'</button>').join('')+'</div><div id="examFeedback" aria-live="polite"></div><div class="actions"><button class="primary hidden" id="examNext"></button></div>';
+ document.querySelectorAll('#examAnswers .answer').forEach(b=>b.onclick=()=>{if(st.answered)return;st.answered=true;const chosen=Number(b.dataset.a),good=chosen===q.ok;st.examAnswers[i]=chosen;if(good)st.examScore++;document.querySelectorAll('#examAnswers .answer').forEach(x=>x.disabled=true);const fb=document.getElementById('examFeedback');fb.className='feedback'+(good?'':' bad');fb.textContent=good?'Resposta registrada!':'Resposta registrada. Continue para a próxima.';const n=document.getElementById('examNext');n.classList.remove('hidden');n.textContent=i===19?'Finalizar prova':'Próxima questão →';n.onclick=()=>{st.answered=false;if(i===19){st.mode='result';renderResult()}else{st.examIndex++;renderExam()}}});
+}
+function renderResult(){
+ const st=courseStates[activeKey],p=st.p,grade=st.examScore,percent=Math.round(grade/20*100);
+ content.innerHTML='<div class="step">RESULTADO DA PROVA FINAL</div><h2>🏆 Prova concluída!</h2><div class="lesson"><h3>'+p.e+' '+p.n+'</h3><p>Você acertou <strong>'+grade+' de 20'+'</strong> questões.</p><p>Seu resultado: <strong>'+percent+'%</strong></p><p>'+(grade>=18?'Excelente! Você demonstrou um ótimo domínio do conteúdo estudado.':grade>=14?'Muito bem! Você foi bem, mas ainda pode revisar alguns assuntos.':grade>=10?'Você está no caminho. Releia as aulas e tente novamente.':'Continue estudando. Volte às aulas e faça a prova outra vez.')+'</p><p>Esta prova é educativa e não representa certificação ou habilitação profissional.</p></div><div class="actions"><button class="primary" id="retryExam">Refazer prova final</button><button class="back" id="review">Rever aulas</button></div>';
+ document.getElementById('retryExam').onclick=()=>{st.mode='exam';st.examIndex=0;st.examScore=0;st.examAnswers=[];st.answered=false;renderExam()};
+ document.getElementById('review').onclick=()=>{st.mode='lesson';st.index=0;renderLesson()};
+}
+function goHome(){stopSpeak();view='home';course.classList.add('hidden');home.classList.remove('hidden');tabs.innerHTML='';window.scrollTo({top:0,behavior:'smooth'})}
+document.getElementById('back').onclick=goHome;
+renderJobs();
+
 </script></body></html>
